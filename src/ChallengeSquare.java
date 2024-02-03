@@ -6,6 +6,7 @@ public class ChallengeSquare extends Square {
     @Override
     public void landOnSquare(Player player, Input input) {
         System.out.println(player.name + " landed on: " + this.name);
-        input.getString("Press Enter");
+        //TODO: CREATE MINIGAMES
+        input.getString("Press Enter to skip");
     }
 }

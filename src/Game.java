@@ -47,6 +47,7 @@ class Game {
         System.out.println(ANSI_GREEN + "\nIts "  + currentPlayer.name + " turn." + ANSI_RESET);
         System.out.println("On Square: " + ANSI_BLUE + currentSquare.name + ANSI_RESET);
 
+        //TODO: If is owner of LandPlot then allow chance to build toilet
         input.getString("Press Enter to Roll");
         //before move
         int moveAmount = Dice.roll();
@@ -64,12 +65,7 @@ class Game {
     private void checkEndGame() {
         //TODO: change logic for gameover
         for(Player player : this.players) {
-            if(player.money <= 0) {
-
-            }
-        }
-        if(currentPlayerIndex == 3) {
-            this.isFinished = true;
+            if(player.money <= 0) this.isFinished = true;
         }
     }
     private void movePlayer(Player player, int steps) {
@@ -77,6 +73,17 @@ class Game {
         player.currentPosition %= BOARD_SIZE;
     }
 
+    private ArrayList<LandPlot> getPlayerLandPlots(Player player) {
+        var plots = new ArrayList<LandPlot>();
+        for(Square s : this.board) {
+            if(s instanceof LandPlot plot) {
+                if(plot.getOwner() == player) {
+                    plots.add(plot);
+                }
+            }
+        }
+        return plots;
+    }
     //DEBUG
     public void printBoard() {
         for(Square s : board) {
