@@ -10,6 +10,7 @@ public class Main {
 
         while(!g.isFinished) {
             g.startNextTurn();
+            g.tickGameLogic();
         }
         scanner.close();
 

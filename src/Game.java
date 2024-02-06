@@ -31,8 +31,8 @@ class Game {
         //TODO: Add logic to add each player; {
         players.add(new Player("PLAYER1"));
         players.add(new Player("PLAYER2"));
-        players.add(new Player("PLAYER3"));
-        players.add(new Player("PLAYER4"));
+//        players.add(new Player("PLAYER3"));
+//        players.add(new Player("PLAYER4"));
         // }
 
         this.board = new Square[BOARD_SIZE]; // Define the array with 20 elements
@@ -44,10 +44,15 @@ class Game {
     public void startNextTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
         Square currentSquare = board[currentPlayer.currentPosition];
-        System.out.println(ANSI_GREEN + "\nIts "  + currentPlayer.name + " turn." + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nIts " + currentPlayer.name + " turn." + ANSI_RESET);
         System.out.println("On Square: " + ANSI_BLUE + currentSquare.name + ANSI_RESET);
 
         //TODO: If is owner of LandPlot then allow chance to build toilet
+        var currentPlayerLandPlots = getPlayerLandPlots(currentPlayer);
+        if(!currentPlayerLandPlots.isEmpty()) {
+            managePlots(currentPlayer, currentPlayerLandPlots);
+        }
+
         input.getString("Press Enter to Roll");
         //before move
         int moveAmount = Dice.roll();
@@ -55,17 +60,58 @@ class Game {
         movePlayer(currentPlayer, moveAmount);
 
         //after move
-        currentSquare = board[currentPlayer.currentPosition];
-        System.out.println(currentPlayer.name + " Now on Square: " + currentSquare.name);
-        currentSquare.landOnSquare(currentPlayer, this.input);
+        Square newSquare = board[currentPlayer.currentPosition];
+        newSquare.landOnSquare(currentPlayer, this.input);
 
         checkEndGame();
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
+
+    private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
+        System.out.println(String.format("%s has %d LandPlots:", currentPlayer.name, currentPlayerLandPlots.size()));
+        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+            var plot = currentPlayerLandPlots.get(i);
+            System.out.println(i + 1 + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
+        }
+        var buildChoice = input.getChar("Would you like to build on your Land Plots (y/n)");
+        if (buildChoice == 'y' || buildChoice == 'Y') {
+            buildBuilding(currentPlayerLandPlots);
+        }
+    }
+    private void buildBuilding(ArrayList<LandPlot> currentPlayerLandPlots) {
+
+        System.out.println("Choose a building to add to your land plot:");
+        System.out.println("1. Worm Breeder");
+        System.out.println("2. Upgraded Worm Breeder");
+        System.out.println("3. Small Toilet");
+        System.out.println("4. Large Toilet");
+
+        int choice = input.getInt("Enter your choice (1-4): ");
+        switch (choice) {
+            case 1:
+                chosenPlot.wormBreederCount++;
+                break;
+            case 2:
+                chosenPlot.upgradedWormBreederCount++;
+                break;
+            case 3:
+                chosenPlot.smallToiletCount++;
+                break;
+            case 4:
+                chosenPlot.largeToiletCount++;
+                break;
+            default:
+                System.out.println("Invalid choice.");
+                return;
+        }
+    }
     private void checkEndGame() {
         //TODO: change logic for gameover
         for(Player player : this.players) {
-            if(player.money <= 0) this.isFinished = true;
+            if(player.money <= 0) {
+                this.isFinished = true;
+                break;
+            }
         }
     }
     private void movePlayer(Player player, int steps) {
@@ -84,10 +130,27 @@ class Game {
         }
         return plots;
     }
+    private int getLandPlotEmptySpaces(ArrayList<LandPlot> plots) {
+        int emptySpaces = 0;
+        for(var plot : plots) {
+            int buildingCapacityRemaining = plot.buildingCapacity - plot.getBuildingCount();
+            emptySpaces += buildingCapacityRemaining;
+        }
+        return emptySpaces;
+    }
     //DEBUG
     public void printBoard() {
         for(Square s : board) {
             System.out.println(s);
+        }
+    }
+
+    public void tickGameLogic() {
+        //TODO: THIS WILL BE FOR RUNNING PASSIVE PER TERM FARMS ETC
+        for(Square s : this.board) {
+            if(s instanceof LandPlot plot) {
+                //LOGIC TO GIVE PLAYER WORMS PER FARM
+            }
         }
     }
 }
