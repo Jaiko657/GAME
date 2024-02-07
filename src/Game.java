@@ -71,22 +71,33 @@ class Game {
         System.out.println(String.format("%s has %d LandPlots:", currentPlayer.name, currentPlayerLandPlots.size()));
         for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
             var plot = currentPlayerLandPlots.get(i);
-            System.out.println(i + 1 + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
+            System.out.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
         }
-        var buildChoice = input.getChar("Would you like to build on your Land Plots (y/n)");
-        if (buildChoice == 'y' || buildChoice == 'Y') {
-            buildBuilding(currentPlayerLandPlots);
+        var wantToBuild = input.getChar("Would you like to build on your Land Plots (y/n)");
+        if (wantToBuild == 'y' || wantToBuild == 'Y') {
+            var buildChoice = input.getInt("Enter Plot Number");
+            if(buildChoice > -1 && buildChoice <= currentPlayerLandPlots.size()) {
+                LandPlot chosenPlot = currentPlayerLandPlots.get(buildChoice-1);
+                if((chosenPlot.buildingCapacity - chosenPlot.getBuildingCount()) > 0) {
+                    //VALID CHOICE
+                    buildBuilding(chosenPlot);
+                } else {
+                    //TODO: add while loop here to allow invalid choice
+                    throw new RuntimeException("CANT ADD BUILDING PLOT FULL");
+                }
+            }
         }
     }
-    private void buildBuilding(ArrayList<LandPlot> currentPlayerLandPlots) {
-
-        System.out.println("Choose a building to add to your land plot:");
+    private void buildBuilding(LandPlot chosenPlot) {
+        System.out.println("Choose which building to add to your land plot:");
         System.out.println("1. Worm Breeder");
         System.out.println("2. Upgraded Worm Breeder");
         System.out.println("3. Small Toilet");
         System.out.println("4. Large Toilet");
 
         int choice = input.getInt("Enter your choice (1-4): ");
+        //TODO
+        assert choice < 5 && choice > 0;
         switch (choice) {
             case 1:
                 chosenPlot.wormBreederCount++;
