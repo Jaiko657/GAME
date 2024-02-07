@@ -56,7 +56,7 @@ class Game {
         input.getString("Press Enter to Roll");
         //before move
         int moveAmount = Dice.roll();
-        System.out.println("Rolled a " + ANSI_PURPLE + moveAmount + ANSI_RESET);
+        System.out.println(ANSI_PURPLE + "Rolled a " + moveAmount + ANSI_RESET + "\n");
         movePlayer(currentPlayer, moveAmount);
 
         //after move
@@ -95,21 +95,25 @@ class Game {
         System.out.println("3. Small Toilet");
         System.out.println("4. Large Toilet");
 
-        int choice = input.getInt("Enter your choice (1-4): ");
-        //TODO
+        int choice = input.getInt("Enter your choice (1-4)");
+        //TODO: ENSURE CHOICE IS VALID (1-4)
         assert choice < 5 && choice > 0;
         switch (choice) {
             case 1:
                 chosenPlot.wormBreederCount++;
+                System.out.println("Successfully built a worm breeder on " + chosenPlot.name);
                 break;
             case 2:
                 chosenPlot.upgradedWormBreederCount++;
+                System.out.println("Successfully built a upgraded worm breeder on " + chosenPlot.name);
                 break;
             case 3:
                 chosenPlot.smallToiletCount++;
+                System.out.println("Successfully built a small toilet on " + chosenPlot.name);
                 break;
             case 4:
                 chosenPlot.largeToiletCount++;
+                System.out.println("Successfully built a large toilet on " + chosenPlot.name);
                 break;
             default:
                 System.out.println("Invalid choice.");
