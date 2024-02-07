@@ -17,7 +17,9 @@ public class Input {
             while (true) {
                 System.out.print(prompt + ": ");
                 try {
-                    return scanner.nextInt();
+                    var ret = scanner.nextInt();
+                    scanner.nextLine();
+                    return ret;
                 } catch (InputMismatchException e) {
                     System.out.println("That's not an integer. Please try again.");
                     scanner.nextLine(); // Clear the buffer
@@ -29,7 +31,9 @@ public class Input {
             while (true) {
                 System.out.print(prompt + ": ");
                 try {
-                    return scanner.nextDouble();
+                    var ret = scanner.nextDouble();
+                    scanner.nextLine();
+                    return ret;
                 } catch (InputMismatchException e) {
                     System.out.println("That's not a double. Please try again.");
                     scanner.nextLine(); // Clear the buffer
