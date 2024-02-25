@@ -40,6 +40,7 @@ class Game {
         System.out.println("On Square: " + ANSI_BLUE + currentSquare.name + ANSI_RESET);
 
         //TODO: If is owner of LandPlot then allow chance to build toilet
+        //TODO: ADD OPTION TO FINISH GAME
         var currentPlayerLandPlots = getPlayerLandPlots(currentPlayer);
         if(!currentPlayerLandPlots.isEmpty()) {
             managePlots(currentPlayer, currentPlayerLandPlots);
@@ -60,13 +61,13 @@ class Game {
     }
 
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-        System.out.println(String.format("%s has %d LandPlots:", currentPlayer.name, currentPlayerLandPlots.size()));
+        System.out.println(currentPlayer.name +" has " + currentPlayerLandPlots.size() + " LandPlots:");
         for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
             var plot = currentPlayerLandPlots.get(i);
             System.out.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
         }
-        var wantToBuild = input.getChar("Would you like to build on your Land Plots (y/n)");
-        if (wantToBuild == 'y' || wantToBuild == 'Y') {
+        var wantToBuild = input.getBool("Would you like to build on your Land Plots");
+        if (wantToBuild) {
             var buildChoice = input.getInt("Enter Plot Number");
             if(buildChoice > -1 && buildChoice <= currentPlayerLandPlots.size()) {
                 LandPlot chosenPlot = currentPlayerLandPlots.get(buildChoice-1);
@@ -113,7 +114,10 @@ class Game {
         }
     }
     private void checkEndGame() {
-        //TODO: change logic for gameover
+        /*
+        TODO: change logic for gameover
+        TODO: IF ALL OBJECTIVES ARE FULLY COMPLETE FINISH GAME ALSO
+        */
         for(Player player : this.players) {
             if(player.money <= 0) {
                 this.isFinished = true;

@@ -52,4 +52,26 @@ public class Input {
                 }
             }
         }
+    public boolean getBool(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (y/n): ");
+            try {
+                var ret = scanner.nextLine().trim();
+                if(ret.length() != 1) {
+                    throw new InputMismatchException("");
+                }
+                final char value = ret.charAt(0);
+                if (value == 'y' || value == 'Y') {
+                    return true;
+                }
+                else if (value == 'n' || value == 'N') {
+                    return false;
+                } else {
+                    throw new InputMismatchException("");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Please Use y/n. Please try again.");
+            }
+        }
+    }
 }
