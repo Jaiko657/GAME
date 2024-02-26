@@ -106,22 +106,23 @@ class Game {
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
         System.out.println(currentPlayer.name +" has " + currentPlayerLandPlots.size() + " LandPlots with " + getLandPlotEmptySpaces(currentPlayerLandPlots) + " empty building spaces:");
         //TODO: LANDPLOTS MAY BE FULL
-        var wantToBuild = input.getBool("Would you like to build on your Land Plots");
+        var wantToBuild = input.getBool("Would you like to build on your Land Plots?");
         if (wantToBuild) {
         for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
             var plot = currentPlayerLandPlots.get(i);
             System.out.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
         }
             var buildChoice = input.getInt("Enter Plot Number to build on");
-            if(buildChoice > -1 && buildChoice <= currentPlayerLandPlots.size()) {
-                LandPlot chosenPlot = currentPlayerLandPlots.get(buildChoice-1);
-                if((chosenPlot.buildingCapacity - chosenPlot.getBuildingCount()) > 0) {
-                    //VALID CHOICE
-                    buildBuilding(chosenPlot);
-                } else {
-                    //TODO: add while loop here to allow invalid choice
-                    throw new RuntimeException("CANT ADD BUILDING PLOT FULL");
-                }
+            //TODO: ADD PROPER VALIDATION
+            assert (buildChoice > -1 && buildChoice <= currentPlayerLandPlots.size());
+
+            LandPlot chosenPlot = currentPlayerLandPlots.get(buildChoice-1);
+            if((chosenPlot.buildingCapacity - chosenPlot.getBuildingCount()) > 0) {
+                //VALID CHOICE
+                buildBuilding(chosenPlot);
+            } else {
+                //TODO: add while loop here to allow invalid choice
+                throw new RuntimeException("CANT ADD BUILDING PLOT FULL");
             }
         }
     }
@@ -156,6 +157,10 @@ class Game {
                 System.out.println("Invalid choice.");
                 return;
         }
+    }
+
+    private bool playerBuildOnPlot(Player player, LandPlot plot, BuildingType type) {
+
     }
     private void checkEndGame() {
         /*
