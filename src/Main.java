@@ -13,6 +13,7 @@ public class Main {
             g.tickGameLogic();
         }
         scanner.close();
+        g.doWinnerMessage();
 
         System.out.println("\nGAME OVER");
     }

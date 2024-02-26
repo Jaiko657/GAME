@@ -37,7 +37,13 @@ public class LandPlot extends Square {
     @Override
     public void landOnSquare(Player player, Input input) {
         if(this.owner != null) {
-            System.out.println(this.name + " is owned already by " + this.owner);
+            if(this.owner == player) {
+                System.out.println(this.name + " is owned already by you.");
+                //TODO: MAYBE DO UPGRADE
+            } else {
+                System.out.println(this.name + " is owned already by " + this.owner.name);
+            }
+            return;
         }
             System.out.println(this.name + " is not owned");
             if(player.money >= this.landPlotCost) {
@@ -54,5 +60,12 @@ public class LandPlot extends Square {
             } else {
                 System.out.println(player.name + " cannot afford Land Plot");
             }
+    }
+
+
+
+    //TODO: REMOVE THIS METHOD USED IN DEBUGING
+    public void setOwner(Player player) {
+        this.owner = player;
     }
 }
