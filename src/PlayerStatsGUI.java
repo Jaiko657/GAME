@@ -7,19 +7,45 @@ public class PlayerStatsGUI extends JFrame {
     private Player player;
     private JLabel nameLabel, moneyLabel, woodLabel, wormsLabel;
     private Font statsFont = new Font("Arial", Font.BOLD, 14);
-    private Color backgroundColor = new Color(33, 37, 41);
+    private Color backgroundColor = new Color(33, 37, 241);
     private Color textColor = new Color(255, 255, 255);
 
-    public PlayerStatsGUI(Player player) {
+    public PlayerStatsGUI(Player player, MonopolyBoard monopolyBoard) {
         this.player = player;
-        initComponents();
+        initComponents(monopolyBoard);
         styleComponents();
     }
 
-    private void initComponents() {
+    private void initComponents(MonopolyBoard monopolyBoard) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(350, 300);
-        setLocationRelativeTo(null);
+        setSize(300, 150);
+        // Get the location and dimensions of the monopolyBoard frame
+        Point monopolyBoardLocation = monopolyBoard.getLocation();
+        int width, depth, newX, newY;
+        switch(this.player.id) {
+            case 0:
+                newX = monopolyBoardLocation.x - this.getWidth();
+                newY = monopolyBoardLocation.y;
+                setLocation(newX, newY);
+                break;
+            case 1:
+                newX = monopolyBoardLocation.x + monopolyBoard.getWidth();
+                newY = monopolyBoardLocation.y;
+                setLocation(newX, newY);
+                break;
+            case 2:
+                newX = monopolyBoardLocation.x - this.getWidth();
+                newY = monopolyBoardLocation.y + monopolyBoard.getHeight() - getHeight();
+                setLocation(newX, newY);
+                break;
+            case 3:
+                newX = monopolyBoardLocation.x + monopolyBoard.getWidth();
+                newY = monopolyBoardLocation.y + monopolyBoard.getHeight() - getHeight();
+                setLocation(newX, newY);
+                break;
+            default:
+                throw new RuntimeException("TODO");
+        }
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -44,8 +70,10 @@ public class PlayerStatsGUI extends JFrame {
         panel.add(moneyLabel);
         panel.add(woodLabel);
         panel.add(wormsLabel);
+/*
         panel.add(Box.createVerticalGlue()); // Add space between labels and button
         panel.add(refreshButton);
+*/
     }
 
     private void styleComponents() {

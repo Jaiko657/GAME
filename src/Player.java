@@ -11,7 +11,7 @@ public class Player {
 
     final private PlayerStatsGUI statsGUI;
 
-    public Player(String name) {
+    public Player(String name, MonopolyBoard monopolyBoard) {
         this.id = nextId++;
         this.name = name;
         this.currentPosition = 0;
@@ -19,7 +19,7 @@ public class Player {
         this.money = 5000;
         this.wood = 2000;
         this.worms = 250;
-        this.statsGUI = new PlayerStatsGUI(this);
+        this.statsGUI = new PlayerStatsGUI(this, monopolyBoard);
         this.statsGUI.setVisible(true);
     }
 

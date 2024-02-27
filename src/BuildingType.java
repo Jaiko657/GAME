@@ -1,2 +1,3 @@
 public enum BuildingType {
+    SMALL_TOILET, LARGE_TOILET, WORM_BREEDER, UPGRADED_WORM_BREEDER
 }
