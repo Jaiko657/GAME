@@ -1,8 +1,5 @@
 import extern.CONSTANTS;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.*;
 //@ing
 import static extern.AnsiColors.*;
@@ -45,14 +42,15 @@ class Game {
 //            }
         }
         //}
-        this.monopolyBoard = new MonopolyBoard(board);
-
+        this.monopolyBoard = new MonopolyBoard(this);
         //TODO: Add logic to add each player; {
         players.add(new Player("PLAYER1", this.monopolyBoard));
         players.add(new Player("PLAYER2", this.monopolyBoard));
         players.add(new Player("PLAYER3", this.monopolyBoard));
         players.add(new Player("PLAYER4", this.monopolyBoard));
         // }
+
+        this.monopolyBoard.refreshDisplay();
     }
     public void startNextTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
@@ -330,5 +328,13 @@ class Game {
         } else {
             System.out.println("No data available.");
         }
+    }
+
+    public Square[] getBoard() {
+        return this.board;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return this.players;
     }
 }

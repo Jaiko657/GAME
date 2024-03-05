@@ -14,7 +14,7 @@ public class Player {
     public Player(String name, MonopolyBoard monopolyBoard) {
         this.id = nextId++;
         this.name = name;
-        this.currentPosition = 0;
+        this.currentPosition = 6;
         //TODO: CHOSE STARTING MONEY
         this.money = 5000;
         this.wood = 2000;
