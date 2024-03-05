@@ -1,11 +1,11 @@
 public class Player {
     public final int id;
     public final String name;
-    public int currentPosition;
+    private int currentPosition;
 
-    public int money;
-    public int wood;
-    public int worms;
+    private int money;
+    private int wood;
+    private int worms;
 
     static private int nextId;
 
@@ -32,20 +32,13 @@ public class Player {
                 '}';
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public int getCurrentPosition() {
-        return currentPosition;
+        return this.currentPosition;
     }
 
-    public void setCurrentPosition(int currentPosition) {
-        this.currentPosition = currentPosition;
+    public void setCurrentPosition(int newPos) {
+        this.currentPosition = newPos;
+        this.statsGUI.refreshDisplay();
     }
 
     public int getMoney() {
@@ -53,8 +46,8 @@ public class Player {
     }
 
     public void setMoney(int money) {
-        statsGUI.refreshDisplay();
         this.money = money;
+        statsGUI.refreshDisplay();
     }
 
     public int getWood() {
@@ -62,8 +55,8 @@ public class Player {
     }
 
     public void setWood(int wood) {
-        statsGUI.refreshDisplay();
         this.wood = wood;
+        statsGUI.refreshDisplay();
     }
 
     public int getWorms() {
@@ -71,7 +64,7 @@ public class Player {
     }
 
     public void setWorms(int worms) {
-        statsGUI.refreshDisplay();
         this.worms = worms;
+        statsGUI.refreshDisplay();
     }
 }

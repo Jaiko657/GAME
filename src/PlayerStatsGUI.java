@@ -53,9 +53,9 @@ public class PlayerStatsGUI extends JFrame {
         add(panel);
 
         nameLabel = new JLabel("Name: " + player.name);
-        moneyLabel = new JLabel("Money: $" + player.money);
-        woodLabel = new JLabel("Wood: " + player.wood + " units");
-        wormsLabel = new JLabel("Worms: " + player.worms + " units");
+        moneyLabel = new JLabel("Money: $" + player.getMoney());
+        woodLabel = new JLabel("Wood: " + player.getWood() + " units");
+        wormsLabel = new JLabel("Worms: " + player.getWorms() + " units");
 
         JButton refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new ActionListener() {
@@ -94,8 +94,8 @@ public class PlayerStatsGUI extends JFrame {
 
     public void refreshDisplay() {
         nameLabel.setText("Name: " + player.name);
-        moneyLabel.setText("Money: $" + player.money);
-        woodLabel.setText("Wood: " + player.wood + " units");
-        wormsLabel.setText("Worms: " + player.worms + " units");
+        moneyLabel.setText("Money: $" + player.getMoney());
+        woodLabel.setText("Wood: " + player.getWood() + " units");
+        wormsLabel.setText("Worms: " + player.getWorms() + " units");
     }
 }

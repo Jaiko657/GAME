@@ -46,14 +46,14 @@ public class LandPlot extends Square {
             return;
         }
             System.out.println(this.name + " is not owned");
-            if(player.money >= this.landPlotCost) {
+            if(player.getMoney() >= this.landPlotCost) {
                 System.out.println("Would you like to buy this land plot?");
                 System.out.println("Stats:");
                 System.out.println(" - " + this.buildingCapacity + " building spots this square.");
                 System.out.println(" - Cost: $" + this.buildingCapacity);
                 final boolean wantToBuy = input.getBool("Do you want to buy?");
                 if(wantToBuy) {
-                        player.money -= this.landPlotCost;
+                        player.setMoney(player.getMoney() - this.landPlotCost);
                         this.owner = player;
                         System.out.println(player.name + " now owns " + this.name);
                 }

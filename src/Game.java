@@ -56,8 +56,8 @@ class Game {
     }
     public void startNextTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
-        Square currentSquare = board[currentPlayer.currentPosition];
-        final String currentStatsString = " " + ANSI_RED + "(money: " + currentPlayer.money + ", wood: " + currentPlayer.wood + ", worms: " + currentPlayer.worms + " )" + ANSI_RESET;
+        Square currentSquare = board[currentPlayer.getCurrentPosition()];
+        final String currentStatsString = " " + ANSI_RED + "(money: " + currentPlayer.getMoney() + ", wood: " + currentPlayer.getWood() + ", worms: " + currentPlayer.getWorms() + " )" + ANSI_RESET;
         System.out.println(ANSI_GREEN + "\nIts " + currentPlayer.name + " turn." + ANSI_RESET + currentStatsString);
         System.out.println("\tOn Square: " + ANSI_BLUE + currentSquare.name + ANSI_RESET + "\n");
 
@@ -85,7 +85,7 @@ class Game {
                     movePlayer(currentPlayer, moveAmount);
 
                     //after move
-                    Square newSquare = board[currentPlayer.currentPosition];
+                    Square newSquare = board[currentPlayer.getCurrentPosition()];
                     newSquare.landOnSquare(currentPlayer, this.input);
 
                     checkEndGame();
@@ -236,16 +236,15 @@ class Game {
         TODO: IF ALL OBJECTIVES ARE FULLY COMPLETE FINISH GAME ALSO
         */
         for(Player player : this.players) {
-            if(player.money <= 0) {
+            if(player.getMoney() <= 0) {
                 this.isFinished = true;
                 break;
             }
         }
     }
     private void movePlayer(Player player, int steps) {
-        player.currentPosition += steps;
-        player.currentPosition %= BOARD_SIZE;
-
+        // have to increment and modulo in one function or the displayed value will be more than max for a single tick
+        player.setCurrentPosition((player.getCurrentPosition() + steps) % BOARD_SIZE);
     }
 
     private ArrayList<LandPlot> getPlayerLandPlots(Player player) {
@@ -281,8 +280,9 @@ class Game {
                 //LOGIC TO GIVE PLAYER WORMS PER FARM
                 final var owner = plot.getOwner();
                 if(owner == null) continue;
-                owner.worms += plot.wormBreederCount * CONSTANTS.wormBreederWormAmount;
-                owner.worms += plot.upgradedWormBreederCount * CONSTANTS.upgradedWormBreederWormAmount;
+
+                owner.setWorms(owner.getWorms() + plot.wormBreederCount * CONSTANTS.wormBreederWormAmount);
+                owner.setWorms(owner.getWorms() + plot.upgradedWormBreederCount * CONSTANTS.upgradedWormBreederWormAmount);
             }
         }
     }
