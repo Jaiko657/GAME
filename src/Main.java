@@ -4,17 +4,21 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        Game g = new Game(scanner);
+        var con = new Console(true);
+        Game g = new Game(con);
 //        g.printBoard();
 
         while(!g.isFinished) {
             g.startNextTurn();
             g.tickGameLogic();
         }
-        scanner.close();
         g.doWinnerMessage();
 
-        System.out.println("\nGAME OVER");
+        con.println("\nGAME OVER");
+
+        con.print("Press Enter To Close Game: ");
+        con.readLn();
+        //to close GUI
+        System.exit(0);
     }
 }

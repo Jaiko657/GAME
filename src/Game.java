@@ -15,49 +15,47 @@ class Game {
     public boolean isFinished = false;
 
     private MonopolyBoard monopolyBoard;
+    public final Console con;
+    private RenderObject renderObject;
 
-    public Game(Scanner scanner) {
-        this.input = new Input(scanner);
+    public Game(Console con) {
+        this.con = con;
+        this.input = new Input(con);
         this.init();
     }
-    private void init() {
 
+    public RenderObject getRenderObject() {
+        return this.renderObject;
+    }
+    private void init() {
         this.currentPlayerIndex = 0;
+        this.renderObject = new RenderObject();
 
 
         this.board = new Square[BOARD_SIZE]; // Define the array with 20 elements
-        for(int i = 0; i < BOARD_SIZE; i++) {
-            board[i] =  BEBUG.getCorrectSquare(i); //TODO: Move getCorrectSquare to game class (used to be for testing)
-            //have to move to below player instansiation
-//            if(board[i] instanceof LandPlot) {
-//                if(i % 4 == 0) {
-//                    ((LandPlot) board[i]).setOwner(players.get(0));
-//                    ((LandPlot) board[i]).smallToiletCount++;
-//                    ((LandPlot) board[i]).wormBreederCount++;
-//                } else {
-//                    ((LandPlot) board[i]).setOwner(players.get(1));
-//                    ((LandPlot) board[i]).largeToiletCount++;
-//                    ((LandPlot) board[i]).upgradedWormBreederCount++;
-//                }
-//            }
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            board[i] = BEBUG.getCorrectSquare(i, renderObject); //TODO: Move getCorrectSquare to game class (used to be for testing)
         }
-        //}
-        this.monopolyBoard = new MonopolyBoard(this);
-        //TODO: Add logic to add each player; {
-        players.add(new Player("PLAYER1", this.monopolyBoard));
-        players.add(new Player("PLAYER2", this.monopolyBoard));
-        players.add(new Player("PLAYER3", this.monopolyBoard));
-        players.add(new Player("PLAYER4", this.monopolyBoard));
-        // }
 
-        this.monopolyBoard.refreshDisplay();
-    }
+        this.monopolyBoard = new MonopolyBoard(this);
+        this.renderObject.setMonopolyBoard(this.monopolyBoard);
+        if (this.renderObject.isActive() == false) {
+            throw new RuntimeException("Renderer Not Set Up");
+        }
+            //TODO: Add logic to add each player; {
+            players.add(new Player("PLAYER1", this.monopolyBoard));
+            players.add(new Player("PLAYER2", this.monopolyBoard));
+            players.add(new Player("PLAYER3", this.monopolyBoard));
+            players.add(new Player("PLAYER4", this.monopolyBoard));
+            // }
+
+            this.monopolyBoard.refreshDisplay();
+        }
     public void startNextTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
         Square currentSquare = board[currentPlayer.getCurrentPosition()];
-        final String currentStatsString = " " + ANSI_RED + "(money: " + currentPlayer.getMoney() + ", wood: " + currentPlayer.getWood() + ", worms: " + currentPlayer.getWorms() + " )" + ANSI_RESET;
-        System.out.println(ANSI_GREEN + "\nIts " + currentPlayer.name + " turn." + ANSI_RESET + currentStatsString);
-        System.out.println("\tOn Square: " + ANSI_BLUE + currentSquare.name + ANSI_RESET + "\n");
+        con.println("\nIts " + currentPlayer.name + " turn.");
+        con.println("\tOn Square: " + currentSquare.name + "\n");
 
         //TODO: If is owner of LandPlot then allow chance to build toilet
         //TODO: ADD OPTION TO FINISH GAME
@@ -67,24 +65,27 @@ class Game {
             var currentPlayerLandPlots = getPlayerLandPlots(currentPlayer);
             var currentPlayerBuildingSpaces = getLandPlotEmptySpaces(currentPlayerLandPlots);
             boolean manageLandPlotsOptionAvailable = !currentPlayerLandPlots.isEmpty();
-            System.out.println(ANSI_CYAN + "1:" + ANSI_RESET + " Roll Dice");
+            con.println(ANSI_CYAN + "1:" + ANSI_RESET + " Roll Dice");
             if (manageLandPlotsOptionAvailable) {
-                System.out.println(ANSI_CYAN + "2:" + ANSI_RESET + " Manage Land Plots (" + ANSI_YELLOW + currentPlayerLandPlots.size() + ANSI_RESET + " LandPlots, " + ANSI_YELLOW + currentPlayerBuildingSpaces + ANSI_RESET + " Building Spaces)");
+                con.println(ANSI_CYAN + "2:" + ANSI_RESET + " Manage Land Plots (" + ANSI_YELLOW + currentPlayerLandPlots.size() + ANSI_RESET + " LandPlots, " + ANSI_YELLOW + currentPlayerBuildingSpaces + ANSI_RESET + " Building Spaces)");
             }
-            System.out.println(ANSI_CYAN + "3:" + ANSI_RESET + " Finish Game");
+            con.println(ANSI_CYAN + "3:" + ANSI_RESET + " Finish Game");
 
             final var userChoice = input.getInt("Enter Choice");
             switch (userChoice) {
                 case 1:
                     input.getString("Press Enter to Roll");
                     //before move
-                    int moveAmount = Dice.roll();
-                    System.out.println(ANSI_PURPLE + "Rolled a " + moveAmount + ANSI_RESET + "\n");
+                    int diceRoll1 = Dice.roll();
+                    int diceRoll2 = Dice.roll();
+                    con.println(currentPlayer.name + " Rolled a " + diceRoll1 + " and a " + diceRoll2);
+                    int moveAmount = diceRoll1 + diceRoll2;
+                    con.println("Moving " + moveAmount + " Squares");
                     movePlayer(currentPlayer, moveAmount);
 
                     //after move
-                    Square newSquare = board[currentPlayer.getCurrentPosition()];
-                    newSquare.landOnSquare(currentPlayer, this.input);
+                    Square landedSquare = board[currentPlayer.getCurrentPosition()];
+                    landedSquare.landOnSquare(currentPlayer, this.input);
 
                     checkEndGame();
                     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -95,7 +96,7 @@ class Game {
                         managePlots(currentPlayer, currentPlayerLandPlots);
                         // Do not set actionSelected to true to allow repeated plot management
                     } else {
-                        System.out.println("Invalid option, please try again.");
+                        con.println("Invalid option, please try again.");
                     }
                     break;
                 case 3:
@@ -103,19 +104,19 @@ class Game {
                     actionSelected = true; // Exit game
                     break;
                 default:
-                    System.out.println("Invalid option, please try again.");
+                    con.println("Invalid option, please try again.");
             }
         }
     }
 
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-        System.out.println(currentPlayer.name +" has " + currentPlayerLandPlots.size() + " LandPlots with " + getLandPlotEmptySpaces(currentPlayerLandPlots) + " empty building spaces:");
+        con.println(currentPlayer.name +" has " + currentPlayerLandPlots.size() + " LandPlots with " + getLandPlotEmptySpaces(currentPlayerLandPlots) + " empty building spaces:");
         //TODO: LANDPLOTS MAY BE FULL
         var wantToBuild = input.getBool("Would you like to build on your Land Plots?");
         if (wantToBuild) {
         for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
             var plot = currentPlayerLandPlots.get(i);
-            System.out.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
+            con.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
         }
             var buildChoice = input.getInt("Enter Plot Number to build on");
             //TODO: ADD PROPER VALIDATION
@@ -132,11 +133,11 @@ class Game {
         }
     }
     private void buildBuilding(LandPlot chosenPlot) {
-        System.out.println("Choose which building to add to your land plot:");
-        System.out.println("1. Worm Breeder");
-        System.out.println("2. Upgraded Worm Breeder");
-        System.out.println("3. Small Toilet");
-        System.out.println("4. Large Toilet");
+        con.println("Choose which building to add to your land plot:");
+        con.println("1. Worm Breeder");
+        con.println("2. Upgraded Worm Breeder");
+        con.println("3. Small Toilet");
+        con.println("4. Large Toilet");
 
         int choice = input.getInt("Enter your choice (1-4)");
         //TODO: ENSURE CHOICE IS VALID (1-4)
@@ -144,22 +145,22 @@ class Game {
         boolean buildingAttempt = false;
         switch (choice) {
             case 1:
-                System.out.println("Successfully built a worm breeder on " + chosenPlot.name);
+                con.println("Successfully built a worm breeder on " + chosenPlot.name);
                 break;
             case 2:
                 chosenPlot.upgradedWormBreederCount++;
-                System.out.println("Successfully built a upgraded worm breeder on " + chosenPlot.name);
+                con.println("Successfully built a upgraded worm breeder on " + chosenPlot.name);
                 break;
             case 3:
                 chosenPlot.smallToiletCount++;
-                System.out.println("Successfully built a small toilet on " + chosenPlot.name);
+                con.println("Successfully built a small toilet on " + chosenPlot.name);
                 break;
             case 4:
                 chosenPlot.largeToiletCount++;
-                System.out.println("Successfully built a large toilet on " + chosenPlot.name);
+                con.println("Successfully built a large toilet on " + chosenPlot.name);
                 break;
             default:
-                System.out.println("Invalid choice.");
+                con.println("Invalid choice.");
                 return;
         }
     }
@@ -243,6 +244,7 @@ class Game {
     private void movePlayer(Player player, int steps) {
         // have to increment and modulo in one function or the displayed value will be more than max for a single tick
         player.setCurrentPosition((player.getCurrentPosition() + steps) % BOARD_SIZE);
+        monopolyBoard.refreshDisplay();
     }
 
     private ArrayList<LandPlot> getPlayerLandPlots(Player player) {
@@ -267,7 +269,7 @@ class Game {
     //DEBUG
     public void printBoard() {
         for(Square s : board) {
-            System.out.println(s);
+            con.println(s);
         }
     }
 
@@ -319,14 +321,14 @@ class Game {
 
         // Handle output for draw or single winner
         if (maxIndexes.size() > 1) {
-            System.out.println("Draw between:");
+            con.println("Draw between:");
             for (int index : maxIndexes) {
-                System.out.println(players.get(index));
+                con.println(players.get(index));
             }
         } else if (!maxIndexes.isEmpty()) {
-            System.out.println(players.get(maxIndexes.getFirst()));
+            con.println(players.get(maxIndexes.getFirst()));
         } else {
-            System.out.println("No data available.");
+            con.println("No data available.");
         }
     }
 

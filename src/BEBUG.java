@@ -1,16 +1,23 @@
 public class BEBUG {
-    static public Square getCorrectSquare(int i) {
+    static public Square getCorrectSquare(int i, RenderObject renderObject) {
         //ChallengeSquare
         if((i % 5) == 0) {
             String name;
             switch (i) {
-                case 0 -> name = "Go Square";
-                case 5 -> name = "WORMS";
-                case 10 -> name = "BRIDGE";
-                case 15 -> name = "MONEY";
+                case 0 -> {
+                    return new StartingSquare(renderObject);
+                }
+                case 5 -> {
+                    return new WormHuntChallenge(renderObject);
+                }
+                case 10 -> {
+                    return new WoodGatheringChallenge(renderObject);
+                }
+                case 15 -> {
+                    return new MarketDonationChallenge(renderObject);
+                }
                 default -> throw new RuntimeException();
             }
-            return new ChallengeSquare(name);
         }
         //Land Plot
         int cost;
@@ -34,6 +41,6 @@ public class BEBUG {
         } else {
             throw new RuntimeException("SHOULDNT OCCUR");
         }
-        return new LandPlot("Plot " + plotNumber, cost, capacity);
+        return new LandPlot("Plot " + plotNumber, renderObject, cost, capacity);
     }
 }

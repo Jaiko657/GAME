@@ -2,61 +2,60 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Input {
-        final private Scanner scanner;
+        final private Console con;
 
-        public Input(Scanner scanner) {
-            this.scanner = scanner;
+        public Console getCon() {return this.con;}
+        public Input(Console con) {
+            this.con = con;
         }
 
         public String getString(String prompt) {
-            System.out.print(prompt + ": ");
-            return scanner.nextLine();
+            con.print(prompt + ": ");
+            return con.readLn();
         }
 
         public int getInt(String prompt) {
             while (true) {
-                System.out.print(prompt + ": ");
+                con.print(prompt + ": ");
                 try {
-                    var ret = scanner.nextInt();
-                    scanner.nextLine();
+                    var txt = con.readLn();
+                    int ret = Integer.parseInt(txt);
                     return ret;
-                } catch (InputMismatchException e) {
-                    System.out.println("That's not an integer. Please try again.");
-                    scanner.nextLine(); // Clear the buffer
+                } catch (Exception e) {
+                    con.println("That's not an integer. Please try again.");
                 }
             }
         }
 
         public double getDouble(String prompt) {
             while (true) {
-                System.out.print(prompt + ": ");
+                con.print(prompt + ": ");
                 try {
-                    var ret = scanner.nextDouble();
-                    scanner.nextLine();
+                    var txt = con.readLn();
+                    double ret = Double.parseDouble(txt);
                     return ret;
-                } catch (InputMismatchException e) {
-                    System.out.println("That's not a double. Please try again.");
-                    scanner.nextLine(); // Clear the buffer
+                } catch (Exception e) {
+                    con.println("That's not a Number. Please try again.");
                 }
             }
         }
 
         public char getChar(String prompt) {
             while (true) {
-                System.out.print(prompt + ": ");
-                String input = scanner.nextLine();
+                con.print(prompt + ": ");
+                String input = con.readLn();
                 if (input.length() == 1) {
                     return input.charAt(0);
                 } else {
-                    System.out.println("Please enter a single character.");
+                    con.println("Please enter a single character.");
                 }
             }
         }
     public boolean getBool(String prompt) {
         while (true) {
-            System.out.print(prompt + " (y/n): ");
+            con.print(prompt + " (y/n): ");
             try {
-                var ret = scanner.nextLine().trim();
+                var ret = con.readLn().trim();
                 if(ret.length() != 1) {
                     throw new InputMismatchException("");
                 }
@@ -70,7 +69,7 @@ public class Input {
                     throw new InputMismatchException("");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Please Use y/n. Please try again.");
+                con.println("Please Use y/n. Please try again.");
             }
         }
     }

@@ -7,8 +7,8 @@ public class LandPlot extends Square {
     public int smallToiletCount;
     public int largeToiletCount;
 
-    public LandPlot(String name, int landPlotCost, int buildingCapacity) {
-        super(name);
+    public LandPlot(String name, RenderObject renderObject, int landPlotCost, int buildingCapacity) {
+        super(name, renderObject);
 
         this.owner = null;
         this.landPlotCost = landPlotCost;
@@ -36,29 +36,36 @@ public class LandPlot extends Square {
 
     @Override
     public void landOnSquare(Player player, Input input) {
+        if(this.renderObject.isActive()) {
+            this.renderObject.update();
+        }
+        var con = input.getCon();
         if(this.owner != null) {
             if(this.owner == player) {
-                System.out.println(this.name + " is owned already by you.");
+                con.println(this.name + " is owned already by you.");
                 //TODO: MAYBE DO UPGRADE
             } else {
-                System.out.println(this.name + " is owned already by " + this.owner.name);
+                con.println(this.name + " is owned already by " + this.owner.name);
             }
             return;
         }
-            System.out.println(this.name + " is not owned");
+            con.println(this.name + " is not owned");
             if(player.getMoney() >= this.landPlotCost) {
-                System.out.println("Would you like to buy this land plot?");
-                System.out.println("Stats:");
-                System.out.println(" - " + this.buildingCapacity + " building spots this square.");
-                System.out.println(" - Cost: $" + this.buildingCapacity);
+                con.println("Would you like to buy this land plot?");
+                con.println("Stats:");
+                con.println(" - " + this.buildingCapacity + " building spots this square.");
+                con.println(" - Cost: $" + this.buildingCapacity);
                 final boolean wantToBuy = input.getBool("Do you want to buy?");
                 if(wantToBuy) {
                         player.setMoney(player.getMoney() - this.landPlotCost);
                         this.owner = player;
-                        System.out.println(player.name + " now owns " + this.name);
+                        con.println(player.name + " now owns " + this.name);
+                        if(this.renderObject.isActive()) {
+                            this.renderObject.update();
+                        }
                 }
             } else {
-                System.out.println(player.name + " cannot afford Land Plot");
+                con.println(player.name + " cannot afford Land Plot");
             }
     }
 

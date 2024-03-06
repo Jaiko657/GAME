@@ -7,16 +7,23 @@ public class PlayerStatsGUI extends JFrame {
     private Player player;
     private JLabel nameLabel, moneyLabel, woodLabel, wormsLabel;
     private Font statsFont = new Font("Arial", Font.BOLD, 14);
-    private Color backgroundColor = new Color(33, 37, 241);
+    private Color backgroundColor;
     private Color textColor = new Color(255, 255, 255);
 
     public PlayerStatsGUI(Player player, MonopolyBoard monopolyBoard) {
         this.player = player;
+        this.backgroundColor = player.color;
+        this.textColor =  new Color(
+                255 - this.backgroundColor.getRed(),
+                255 - this.backgroundColor.getGreen(),
+                255 - this.backgroundColor.getBlue());
         initComponents(monopolyBoard);
         styleComponents();
     }
 
     private void initComponents(MonopolyBoard monopolyBoard) {
+        setUndecorated(true);
+        setType(Type.UTILITY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(300, 150);
         // Get the location and dimensions of the monopolyBoard frame
@@ -57,14 +64,6 @@ public class PlayerStatsGUI extends JFrame {
         woodLabel = new JLabel("Wood: " + player.getWood() + " units");
         wormsLabel = new JLabel("Worms: " + player.getWorms() + " units");
 
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                refreshDisplay();
-            }
-        });
-
         panel.add(Box.createVerticalStrut(10)); // Add some space at the top
         panel.add(nameLabel);
         panel.add(moneyLabel);
@@ -77,19 +76,11 @@ public class PlayerStatsGUI extends JFrame {
     }
 
     private void styleComponents() {
-        // Apply styles to labels
+        // Apply Fonts to labels
         for (JLabel label : new JLabel[]{nameLabel, moneyLabel, woodLabel, wormsLabel}) {
-            label.setForeground(textColor);
             label.setFont(statsFont);
         }
-
-        // Style the refresh button
-/*
-        JButton refreshButton = (JButton) getContentPane().getComponent(getContentPane().getComponentCount() - 1);
-        refreshButton.setFont(statsFont);
-        refreshButton.setBackground(new Color(0, 123, 255));
-        refreshButton.setForeground(textColor);
-*/
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 20));
     }
 
     public void refreshDisplay() {

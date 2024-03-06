@@ -1,6 +1,9 @@
+import java.awt.*;
+
 public class Player {
     public final int id;
     public final String name;
+    public final Color color;
     private int currentPosition;
 
     private int money;
@@ -9,12 +12,15 @@ public class Player {
 
     static private int nextId;
 
-    final private PlayerStatsGUI statsGUI;
+    private final PlayerStatsGUI statsGUI;
+
+    private final static Color[] colorArray = {Color.BLUE, Color.CYAN, Color.MAGENTA, Color.ORANGE};
 
     public Player(String name, MonopolyBoard monopolyBoard) {
         this.id = nextId++;
+        this.color = colorArray[this.id];
         this.name = name;
-        this.currentPosition = 6;
+        this.currentPosition = 0;
         //TODO: CHOSE STARTING MONEY
         this.money = 5000;
         this.wood = 2000;
@@ -32,6 +38,9 @@ public class Player {
                 '}';
     }
 
+    public PlayerStatsGUI getStatsGUI() {
+        return this.statsGUI;
+    }
     public int getCurrentPosition() {
         return this.currentPosition;
     }

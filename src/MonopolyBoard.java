@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,8 +16,7 @@ public class MonopolyBoard extends JFrame {
         Square underlyingSquare;
         public SquarePanel(Game game, int boardIndex) {
             super();
-//            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setAlignmentX(Component.CENTER_ALIGNMENT);
+            //TODO: New line for each player
             var board = game.getBoard();
             this.underlyingSquare = board[guiToBoardTranslationIndexes[boardIndex]];
             add(new JLabel(this.underlyingSquare.name));
@@ -24,7 +25,18 @@ public class MonopolyBoard extends JFrame {
             for(int i = 0; i < players.size(); i++) {
                 var player = players.get(i);
                 if(player.getCurrentPosition() == guiToBoardTranslationIndexes[boardIndex]) {
-                    add(new JLabel(player.name));
+                    var playerLabel = new JLabel(player.name);
+                    playerLabel.setForeground(player.color);
+
+                    if(underlyingSquare instanceof LandPlot) {
+                        if(((LandPlot) this.underlyingSquare).getOwner() == player) {
+                            playerLabel.setForeground(new Color(
+                                    255 - player.color.getRed(),
+                                    255 - player.color.getGreen(),
+                                    255 - player.color.getBlue()));
+                        }
+                    }
+                    add(playerLabel);
                 }
             }
         }
@@ -35,6 +47,10 @@ public class MonopolyBoard extends JFrame {
                 g.setColor(Color.RED);
             } else {
                 g.setColor(Color.GREEN);
+                var owner = ((LandPlot) underlyingSquare).getOwner();
+                if(owner != null) {
+                    g.setColor(owner.color);
+                }
             }
             g.fillRect(0, 0, getWidth(), getHeight());
         }
@@ -58,6 +74,35 @@ public class MonopolyBoard extends JFrame {
 
         setLocationRelativeTo(null); //centers game
         setVisible(true);
+        game.con.setSize(590,570);
+        Point gameLocation = this.getLocation();
+        game.con.setLocation(gameLocation.x+155, gameLocation.y+180);
+        game.con.setUndecorated(true);
+        game.con.setType(Type.UTILITY);
+        game.con.setBgColour(Color.GREEN);
+        game.con.setFont(new Font("Arial", Font.PLAIN, 30));
+        game.con.setVisible(true);
+        game.con.gainFocus();
+
+        // Listener to toggle alwaysOnTop for Console and Stats based on focus of monopoly game
+        WindowAdapter focusAdapter = new WindowAdapter() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                game.con.setAlwaysOnTop(true);
+                game.getPlayers().forEach(player -> player.getStatsGUI().setAlwaysOnTop(true));
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                game.con.setAlwaysOnTop(false);
+                game.getPlayers().forEach(player -> player.getStatsGUI().setAlwaysOnTop(false));
+            }
+        };
+
+        // Adding the same listener to gameboard frames
+        this.addWindowFocusListener(focusAdapter);
+
+        game.con.requestFocus();
     }
 
     private void createBoardSections(Game game) {
@@ -86,14 +131,12 @@ public class MonopolyBoard extends JFrame {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         boardSections.put("East", rightPanel);
 
-        boardSections.put("Center", createCenterPanel());
 
         // Add new panels to the GUI
         add(boardSections.get("North"), BorderLayout.NORTH);
         add(boardSections.get("East"), BorderLayout.EAST);
         add(boardSections.get("South"), BorderLayout.SOUTH);
         add(boardSections.get("West"), BorderLayout.WEST);
-        add(boardSections.get("Center"), BorderLayout.CENTER);
 
         // Refresh the GUI to show the new panels
         validate();
@@ -127,21 +170,6 @@ public class MonopolyBoard extends JFrame {
             panel.add(square);
         }
         return panel;
-    }
-
-    private JPanel createCenterPanel() {
-/*
-        var centerPanel = new JPanel();
-        centerPanel.setLayout(new BorderLayout());
-        JTextArea textArea = new JTextArea("Monopoly Game Board");
-        textArea.setEditable(true);
-        centerPanel.add(textArea, BorderLayout.CENTER);
-*/
-
-//        var centerPanel = new CustomConsolePanel();
-
-        var centerPanel = new MonopolyTextArea();
-        return centerPanel;
     }
 
     public void refreshDisplay() {
