@@ -1,8 +1,6 @@
 import extern.CONSTANTS;
 
 import java.util.*;
-//@ing
-import static extern.AnsiColors.*;
 
 class Game {
     private static final int BOARD_SIZE = 20;
@@ -65,11 +63,11 @@ class Game {
             var currentPlayerLandPlots = getPlayerLandPlots(currentPlayer);
             var currentPlayerBuildingSpaces = getLandPlotEmptySpaces(currentPlayerLandPlots);
             boolean manageLandPlotsOptionAvailable = !currentPlayerLandPlots.isEmpty();
-            con.println(ANSI_CYAN + "1:" + ANSI_RESET + " Roll Dice");
+            con.println("1:" + " Roll Dice");
             if (manageLandPlotsOptionAvailable) {
-                con.println(ANSI_CYAN + "2:" + ANSI_RESET + " Manage Land Plots (" + ANSI_YELLOW + currentPlayerLandPlots.size() + ANSI_RESET + " LandPlots, " + ANSI_YELLOW + currentPlayerBuildingSpaces + ANSI_RESET + " Building Spaces)");
+                con.println("2:" + " Manage Land Plots (" + currentPlayerLandPlots.size() + " LandPlots, " + currentPlayerBuildingSpaces + " Building Spaces)");
             }
-            con.println(ANSI_CYAN + "3:" + ANSI_RESET + " Finish Game");
+            con.println("3:" + " Finish Game");
 
             final var userChoice = input.getInt("Enter Choice");
             switch (userChoice) {
