@@ -1,5 +1,3 @@
-import extern.CONSTANTS;
-
 import java.util.*;
 
 class Game {
@@ -32,7 +30,7 @@ class Game {
 
         this.board = new Square[BOARD_SIZE]; // Define the array with 20 elements
         for (int i = 0; i < BOARD_SIZE; i++) {
-            board[i] = BEBUG.getCorrectSquare(i, renderObject); //TODO: Move getCorrectSquare to game class (used to be for testing)
+            board[i] = getCorrectSquare(i, renderObject); //TODO: Move getCorrectSquare to game class (used to be for testing)
         }
 
         this.monopolyBoard = new MonopolyBoard(this);
@@ -49,6 +47,50 @@ class Game {
 
             this.monopolyBoard.refreshDisplay();
         }
+    static public Square getCorrectSquare(int i, RenderObject renderObject) {
+        //ChallengeSquare
+        if((i % 5) == 0) {
+            String name;
+            switch (i) {
+                case 0 -> {
+                    return new StartingSquare(renderObject);
+                }
+                case 5 -> {
+                    return new WormHuntChallenge(renderObject);
+                }
+                case 10 -> {
+                    return new WoodGatheringChallenge(renderObject);
+                }
+                case 15 -> {
+                    return new MarketDonationChallenge(renderObject);
+                }
+                default -> throw new RuntimeException();
+            }
+        }
+        //Land Plot
+        int cost;
+        int capacity;
+        int plotNumber = i;
+        if(i < 5) {
+            cost = 100;
+            capacity = 2;
+        } else if(i < 10) {
+            cost = 150;
+            capacity = 3;
+            plotNumber -= 1;
+        } else if(i < 15) {
+            cost = 200;
+            capacity = 4;
+            plotNumber -= 2;
+        } else if(i < 20) {
+            cost = 250;
+            capacity = 5;
+            plotNumber -= 3;
+        } else {
+            throw new RuntimeException("SHOULDNT OCCUR");
+        }
+        return new LandPlot("Plot " + plotNumber, renderObject, laborCost, woodCost, wormCost, buildingType);
+    }
     public void startNextTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
         Square currentSquare = board[currentPlayer.getCurrentPosition()];
@@ -131,112 +173,28 @@ class Game {
         }
     }
     private void buildBuilding(LandPlot chosenPlot) {
-        con.println("Choose which building to add to your land plot:");
-        con.println("1. Worm Breeder");
-        con.println("2. Upgraded Worm Breeder");
-        con.println("3. Small Toilet");
-        con.println("4. Large Toilet");
-
-        int choice = input.getInt("Enter your choice (1-4)");
-        //TODO: ENSURE CHOICE IS VALID (1-4)
-        assert choice < 5 && choice > 0;
-        boolean buildingAttempt = false;
-        switch (choice) {
-            case 1:
-                con.println("Successfully built a worm breeder on " + chosenPlot.name);
-                break;
-            case 2:
-                chosenPlot.upgradedWormBreederCount++;
-                con.println("Successfully built a upgraded worm breeder on " + chosenPlot.name);
-                break;
-            case 3:
-                chosenPlot.smallToiletCount++;
-                con.println("Successfully built a small toilet on " + chosenPlot.name);
-                break;
-            case 4:
-                chosenPlot.largeToiletCount++;
-                con.println("Successfully built a large toilet on " + chosenPlot.name);
-                break;
-            default:
-                con.println("Invalid choice.");
-                return;
-        }
-    }
-
-    private boolean playerBuildOnPlot(Player player, LandPlot plot, BuildingType type) {
-        int costMoney = 0;
-        int costWood = 0;
-        int costWorms = 0;
-
-        // Determine costs based on building type
-        switch (type) {
-            case SMALL_TOILET:
-                costMoney = CONSTANTS.smallToiletMoneyCost;
-                costWood = CONSTANTS.smallToiletWoodCost;
-                costWorms = CONSTANTS.smallToiletWormCost;
-                break;
-            case LARGE_TOILET:
-                costMoney = CONSTANTS.largeToiletMoneyCost;
-                costWood = CONSTANTS.largeToiletWoodCost;
-                costWorms = CONSTANTS.largeToiletWormCost;
-                break;
-            case WORM_BREEDER:
-                costMoney = CONSTANTS.wormBreederMoneyCost;
-                costWood = CONSTANTS.wormBreederWoodCost;
-                costWorms = CONSTANTS.wormBreederWormCost;
-                break;
-            case UPGRADED_WORM_BREEDER:
-                costMoney = CONSTANTS.upgradedWormBreederMoneyCost;
-                costWood = CONSTANTS.upgradedWormBreederWoodCost;
-                costWorms = CONSTANTS.upgradedWormBreederWormCost;
-                break;
-            default:
-                return false; // Invalid building type
-        }
-
-        // Validate if player has enough resources
-        if (player.getMoney() < costMoney || player.getWood() < costWood || player.getWorms() < costWorms) {
-            return false; // Not enough resources
-        }
-
-        // Check if there's capacity to build on the plot
-        if (plot.getBuildingCount() >= plot.buildingCapacity) {
-            return false; // No capacity
-        }
-
-        // Deduct costs from player resources
-        player.setMoney(player.getMoney() - costMoney);
-        player.setWood(player.getWood() - costWood);
-        player.setWorms(player.getWorms() - costWorms);
-
-        // Increment the appropriate building count on the plot
-        switch (type) {
-            case SMALL_TOILET:
-                plot.smallToiletCount++;
-                break;
-            case LARGE_TOILET:
-                plot.largeToiletCount++;
-                break;
-            case WORM_BREEDER:
-                plot.wormBreederCount++;
-                break;
-            case UPGRADED_WORM_BREEDER:
-                plot.upgradedWormBreederCount++;
-                break;
-        }
-
-        return true; // Build successful
+        //TODO: GO THROUGH PAYING FOR EACH STEP
+        /*
+            1: Pay Workers
+            2: Provide Wood
+            3: Provide Worms
+        */
     }
     private void checkEndGame() {
-        /*
-        TODO: change logic for gameover
-        TODO: IF ALL OBJECTIVES ARE FULLY COMPLETE FINISH GAME ALSO
-        */
         for(Player player : this.players) {
             if(player.getMoney() <= 0) {
                 this.isFinished = true;
-                break;
+                return;
             }
+        }
+        int buildingCount = 0;
+        for(Square square : this.board) {
+            if(square instanceof LandPlot && ((LandPlot) square).getHasBuilding()) {
+                buildingCount++;
+            }
+        }
+        if(buildingCount == BOARD_SIZE) {
+            this.isFinished = true;
         }
     }
     private void movePlayer(Player player, int steps) {
@@ -255,20 +213,6 @@ class Game {
             }
         }
         return plots;
-    }
-    private int getLandPlotEmptySpaces(ArrayList<LandPlot> plots) {
-        int emptySpaces = 0;
-        for(var plot : plots) {
-            int buildingCapacityRemaining = plot.buildingCapacity - plot.getBuildingCount();
-            emptySpaces += buildingCapacityRemaining;
-        }
-        return emptySpaces;
-    }
-    //DEBUG
-    public void printBoard() {
-        for(Square s : board) {
-            con.println(s);
-        }
     }
 
     public void tickGameLogic() {
@@ -336,5 +280,11 @@ class Game {
 
     public ArrayList<Player> getPlayers() {
         return this.players;
+    }
+    //TODO: DEBUG REMOVE
+    public void printBoard() {
+        for(Square s : board) {
+            con.println(s);
+        }
     }
 }
