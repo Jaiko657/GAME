@@ -93,8 +93,32 @@ public class LandPlot extends Square {
     }
     private void sellComposite(Player player, Input input) {
         //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
-//        Stored in Building object
-        //FOR NOW JUST GIVE MONEY
-        player.setMoney(player.getMoney()+ 100);
+        var con = input.getCon();
+        // Assume there is a method to get the total compost amount stored in the building
+        int compostAmount = building.getAmountStored();
+
+        // Check if there is compost to sell
+        if (compostAmount > 0) {
+            // Assuming a fixed price per unit for simplicity. Could be dynamic based on game conditions.
+            int pricePerUnit = 5; // This price can be adjusted as needed
+
+            // Calculate the total sale amount
+            int totalSaleAmount = compostAmount * pricePerUnit;
+
+            // Update player's money
+            player.setMoney(player.getMoney() + totalSaleAmount);
+
+            // Reset the compost storage in the building to 0 after selling
+            building.empty();
+
+            // Inform the player
+            con.println("You sold " + compostAmount + " units of compost to farmers for " + totalSaleAmount + " currency units.");
+        } else {
+            // Inform the player if there's no compost to sell
+            con.println("There is no compost available to sell.");
+        }
+
+        // Wait for the player to acknowledge before proceeding
+        input.getString("Press Enter to finish.");
     }
 }

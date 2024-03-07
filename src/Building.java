@@ -22,4 +22,8 @@ public class Building {
     public int getAmountStored() {
         return amountStored;
     }
+
+    public void empty() {
+        this.amountStored = 0;
+    }
 }
