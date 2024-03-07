@@ -32,6 +32,5 @@ public class MarketDonationCorner extends CornerSquare {
             con.println("Approaching the vendors paid off with a guaranteed donation of " + donation + " currency units.");
         }
         player.setMoney(player.getMoney() + donation);
-        input.getString("Press Enter to finish turn");
     }
 }

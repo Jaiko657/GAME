@@ -26,6 +26,5 @@ public class WoodGatheringCorner extends CornerSquare {
             con.println("You took the short path and collected " + woodCollected + " units of wood.");
         }
         player.setWood(player.getWood() + woodCollected);
-        input.getString("Press Enter to finish turn");
     }
 }

@@ -27,6 +27,5 @@ public class WormHuntCorner extends CornerSquare {
             con.println("Foraging around, you've collected " + wormsCollected + " worms.");
         }
         player.setWorms(player.getWorms() + wormsCollected);
-        input.getString("Press Enter to finish turn");
     }
 }
