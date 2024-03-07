@@ -5,12 +5,21 @@ public class WormHuntChallenge extends ChallengeSquare {
 
     @Override
     public void landOnSquare(Player player, Input input) {
-        super.landOnSquare(player, input);
         var con = input.getCon();
         con.println("You arrive at the bank of the river! Do you want to 'dig' or 'forage'?");
-        String choice = input.getString("Enter 'dig' or 'forage': ");
+
+        con.println("1. Dig");
+        con.println("2. Forage");
+        var choice = 1;
+        while(true) {
+            choice = input.getInt("Choice");
+            if(choice == 1 || choice == 2) {
+                break;
+            }
+            con.println("Invalid Choice Please type 1 or 2");
+        }
         int wormsCollected;
-        if ("dig".equalsIgnoreCase(choice)) {
+        if (choice == 1) {
             wormsCollected = (int) (Math.random() * 25 + 10); // Generates between 10 to 35 worms
             con.println("Digging deep, you've collected " + wormsCollected + " worms!");
         } else {
@@ -20,4 +29,3 @@ public class WormHuntChallenge extends ChallengeSquare {
         player.setWorms(player.getWorms() + wormsCollected);
     }
 }
-

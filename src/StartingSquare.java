@@ -1,28 +1,26 @@
 public class StartingSquare extends ChallengeSquare {
+    private int spareWood = 500;
     public StartingSquare(RenderObject renderObject) {
         super("Starting Square", renderObject);
     }
 
     @Override
     public void landOnSquare(Player player, Input input) {
-        super.landOnSquare(player, input);
         var con = input.getCon();
-        con.println("A local market is willing to donate resources. Do you approach 'vendors' for small guaranteed donations or 'auction' to potentially receive a large donation?");
-        String choice = input.getString("Enter 'vendors' or 'auction': ");
-        int donation;
-        if ("auction".equalsIgnoreCase(choice)) {
-            // Simulate a 50% chance to win big at the auction
-            if (Math.random() < 0.5) {
-                donation = (int) (Math.random() * 100 + 50); // Wins big, between 50 to 150 units
-                con.println("Your bid was successful at the auction! You received a donation of " + donation + " currency units.");
-            } else {
-                donation = 0; // Loses the bid
-                con.println("Unfortunately, your bid at the auction was not successful. You received no donations.");
-            }
-        } else {
-            donation = (int) (Math.random() * 20 + 10); // Guaranteed small donation, between 10 to 30 units
-            con.println("Approaching the vendors paid off with a guaranteed donation of " + donation + " currency units.");
+        if(spareWood <= 0) {
+            con.println("You arrive back where you began. Hope you all have enough wood as all the spare wood has been claimed!!!");
+            return;
         }
-        player.setMoney(player.getMoney() + donation);
+        con.println("You arrive back where you began. Luckily there is some backup materials!\nThere is "+this.spareWood+" wood available how much do you want to take. Remember it is important to work together so if you don't need wood type 0.");
+        int choice = 0;
+        while(true) {
+            choice = input.getInt("Amount of Wood you want to take(less than "+this.spareWood+")");
+            if(choice <= this.spareWood && choice >= 0) {
+                break;
+            }
+            con.println("Invalid Amount of wood!!!\n");
+        }
+        this.spareWood -= choice;
+        player.setWood(player.getWood() + choice);
     }
 }

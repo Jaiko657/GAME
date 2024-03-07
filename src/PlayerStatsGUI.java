@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 public class PlayerStatsGUI extends JFrame {
     private Player player;
     private JLabel nameLabel, moneyLabel, woodLabel, wormsLabel;
-    private Font statsFont = new Font("Arial", Font.BOLD, 14);
+    private Font statsFont = new Font("Arial", Font.PLAIN, 20);
     private Color backgroundColor;
     private Color textColor = new Color(255, 255, 255);
 
@@ -25,6 +25,7 @@ public class PlayerStatsGUI extends JFrame {
         setUndecorated(true);
         setType(Type.UTILITY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         setSize(300, 150);
         // Get the location and dimensions of the monopolyBoard frame
         Point monopolyBoardLocation = monopolyBoard.getLocation();
@@ -59,28 +60,33 @@ public class PlayerStatsGUI extends JFrame {
         panel.setBackground(backgroundColor);
         add(panel);
 
-        nameLabel = new JLabel("Name: " + player.name);
-        moneyLabel = new JLabel("Money: $" + player.getMoney());
-        woodLabel = new JLabel("Wood: " + player.getWood() + " units");
-        wormsLabel = new JLabel("Worms: " + player.getWorms() + " units");
+        nameLabel = new JLabel("Name: " + player.name, SwingConstants.CENTER);
+        moneyLabel = new JLabel("Money: $" + player.getMoney(), SwingConstants.CENTER);
+        woodLabel = new JLabel("Wood: " + player.getWood() + " units", SwingConstants.CENTER);
+        wormsLabel = new JLabel("Worms: " + player.getWorms() + " units", SwingConstants.CENTER);
+
 
         panel.add(Box.createVerticalStrut(10)); // Add some space at the top
-        panel.add(nameLabel);
-        panel.add(moneyLabel);
-        panel.add(woodLabel);
-        panel.add(wormsLabel);
-/*
-        panel.add(Box.createVerticalGlue()); // Add space between labels and button
-        panel.add(refreshButton);
-*/
+        panel.add(createCenteredPanel(nameLabel));
+        panel.add(createCenteredPanel(moneyLabel));
+        panel.add(createCenteredPanel(woodLabel));
+        panel.add(createCenteredPanel(wormsLabel));
+        panel.add(Box.createVerticalStrut(10)); // Add some space at the bottom
     }
+    private JPanel createCenteredPanel(JLabel label) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel.setBackground(backgroundColor);
+        panel.add(label);
+        return panel;
+    }
+
 
     private void styleComponents() {
         // Apply Fonts to labels
         for (JLabel label : new JLabel[]{nameLabel, moneyLabel, woodLabel, wormsLabel}) {
             label.setFont(statsFont);
         }
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        nameLabel.setFont(new Font("Arial", Font.BOLD, statsFont.getSize()));
     }
 
     public void refreshDisplay() {
