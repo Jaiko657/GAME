@@ -218,13 +218,8 @@ class Game {
         //TODO: THIS WILL BE FOR RUNNING PASSIVE PER TERM FARMS ETC
         for(Square s : this.board) {
             if(s instanceof LandPlot plot) {
-                //LOGIC TO GIVE PLAYER WORMS PER FARM
-                final var owner = plot.getOwner();
-                if(owner == null) continue;
-
-                //TODO: REIMPLEMENT FOR NEW TYPE OF LANDPLOTS
-//                owner.setWorms(owner.getWorms() + plot.wormBreederCount * CONSTANTS.wormBreederWormAmount);
-//                owner.setWorms(owner.getWorms() + plot.upgradedWormBreederCount * CONSTANTS.upgradedWormBreederWormAmount);
+                var landPlot = (LandPlot) plot;
+                plot.tick();
             }
         }
     }

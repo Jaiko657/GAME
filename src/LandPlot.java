@@ -4,36 +4,43 @@ public class LandPlot extends Square {
     final public int woodCost;
     final public int wormCost;
     final public BuildingType buildingType;
-
-    private boolean hasBuilding;
+    private Building building;
 
     public LandPlot(String name, RenderObject renderObject, BuildingType buildingType) {
         super(name, renderObject);
         switch(buildingType) {
             case WORM_BREEDER -> {
-                this.laborCost = 500;
-                this.woodCost = 500;
-                this.wormCost = 30;
+                this.laborCost = PRICES.WORM_BREEDER_LABORCOST;
+                this.woodCost = PRICES.WORM_BREEDER_WOODCOST;
+                this.wormCost = PRICES.WORM_BREEDER_WORMCOST;
             }
             case TOILET -> {
-                this.laborCost = 800;
-                this.woodCost = 600;
-                this.wormCost = 100;
+                this.laborCost = PRICES.TOILET_LABORCOST;
+                this.woodCost = PRICES.TOILET_WOODCOST;
+                this.wormCost = PRICES.TOILET_WORMCOST;
             }
             default -> {
                 throw new RuntimeException("Invalid Building Type");
             }
         }
         this.buildingType = buildingType;
-        this.hasBuilding = false;
+        this.building = null;
     }
     public boolean getHasBuilding() {
-        return this.hasBuilding;
+        return building != null;
+    }
+
+    public void buildBuilding() {
+        this.building = new Building(buildingType);
     }
 
     //TODO: Way to give away ownership of plot
     public Player getOwner() {
         return this.owner;
+    }
+    public void tick() {
+        if(building == null) return;
+        building.tick();
     }
 
     @Override
@@ -54,29 +61,26 @@ public class LandPlot extends Square {
             return;
         }
         con.println(this.name + " is not owned");
-        if(canPlayerAfford(player)) {
-            con.println("\nWould you like to take ownership this community land plot?");
-            switch(this.buildingType) {
-                case TOILET:
-                    con.println("It can have a Toilet for the community built on it!");
-                    break;
-                case WORM_BREEDER:
-                    con.println("It can have a worm breeder to help you build more toilets built on it!");
-                    break;
+
+        con.println("\nWould you like to take ownership this community land plot?");
+        switch(this.buildingType) {
+            case TOILET:
+                con.println("It can have a Toilet for the community built on it!");
+                break;
+            case WORM_BREEDER:
+                con.println("It can have a worm breeder to help you build more toilets built on it!");
+                break;
 //                case TOILET_OR_BREEDER:
 //                    con.println("It can have a Toilet for the community built on it or a worm breeder to help you build more toilets built on it!");
 //                    break;
-            }
-            var ownershipChoice = input.getBool("Do you want to take ownership?");
-            if(ownershipChoice) {
-                this.owner = player;
-                con.println(player.name + " now owns " + this.name);
-                renderObject.update();
-            } else {
-                con.println("You don't want to take control of Land Plot. Next Players Turn!!!");
-            }
+        }
+        var ownershipChoice = input.getBool("Do you want to take ownership?");
+        if(ownershipChoice) {
+            this.owner = player;
+            con.println(player.name + " now owns " + this.name);
+            renderObject.update();
         } else {
-            con.println(player.name + " cannot afford Land Plot");
+            con.println("You don't want to take control of Land Plot. Next Players Turn!!!");
         }
     }
 
@@ -89,13 +93,8 @@ public class LandPlot extends Square {
     }
     private void sellComposite(Player player, Input input) {
         //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
+//        Stored in Building object
         //FOR NOW JUST GIVE MONEY
         player.setMoney(player.getMoney()+ 100);
-    }
-
-
-    //TODO: REMOVE THIS METHOD USED IN DEBUGING
-    public void setOwner(Player player) {
-        this.owner = player;
     }
 }
