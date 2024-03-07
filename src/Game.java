@@ -30,7 +30,7 @@ class Game {
 
         this.board = new Square[BOARD_SIZE]; // Define the array with 20 elements
         for (int i = 0; i < BOARD_SIZE; i++) {
-            board[i] = getCorrectSquare(i, renderObject); //TODO: Move getCorrectSquare to game class (used to be for testing)
+            board[i] = getCorrectSquare(i, renderObject);
         }
 
         this.monopolyBoard = new MonopolyBoard(this);
@@ -54,7 +54,7 @@ class Game {
             String name;
             switch (i) {
                 case 0 -> {
-                    return new StartingSquare(renderObject);
+                    return new BaseCampSquare(renderObject);
                 }
                 case 5 -> {
                     return new WormHuntCorner(renderObject);
@@ -98,8 +98,6 @@ class Game {
         con.println("\nIts " + currentPlayer.name + " turn.");
         con.println("\tOn Square: " + currentSquare.name + "\n");
 
-        //TODO: If is owner of LandPlot then allow chance to build toilet
-        //TODO: ADD OPTION TO FINISH GAME
         boolean actionSelected = false;
 
         while (!actionSelected) {
@@ -150,16 +148,44 @@ class Game {
                     con.println("Invalid option, please try again.");
             }
         }
+        input.getString("Press Enter to finish.");
     }
 
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
         //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP AND TAKING OUT COMPOSITE
-        //use input.getInt(prompt) to get choice between 3 choices
-        //choice 1, collect compost from toilets that are built
-        //choice 2, collect worms from breeder
-        //choice 3, Begin Construction of Building on plot
+        private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
+            // Managing Plots for the current player
+            con.clear();
+            con.println("Managing Plots for: " + currentPlayer.name);
 
-        con.println("MANAGE PLOTS TODO");
+            boolean finishedManaging = false;
+            while (!finishedManaging) {
+                con.println("1: Build on a plot");
+                con.println("2: Collect worms");
+                con.println("3: Collect Compost");
+                con.println("0: Finish Managing Plots");
+
+                final var userChoice = input.getInt("Enter Choice");
+                switch (userChoice) {
+                    case 0:
+                        finishedManaging = true;
+                        break;
+                    case 1:
+                        manageBuildings();
+                        break;
+                    case 2:
+                        collectWorms();
+                        break;
+                    case 3:
+                        collectCompost();
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        con.println("Invalid option, please try again.");
+                }
+            }
+        }
     }
     private void buildBuilding(LandPlot chosenPlot) {
         //TODO: GO THROUGH PAYING FOR EACH STEP
