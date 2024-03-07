@@ -52,7 +52,7 @@ public class PlayerStatsGUI extends JFrame {
                 setLocation(newX, newY);
                 break;
             default:
-                throw new RuntimeException("TODO");
+                throw new RuntimeException("WONT HAPPEN IF MAX 4 PLAYERS");
         }
 
         JPanel panel = new JPanel();
