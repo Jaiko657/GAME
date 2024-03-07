@@ -1,5 +1,5 @@
-public class WormHuntChallenge extends ChallengeSquare {
-    public WormHuntChallenge(RenderObject renderObject) {
+public class WormHuntCorner extends CornerSquare {
+    public WormHuntCorner(RenderObject renderObject) {
         super("River Edge", renderObject);
     }
 

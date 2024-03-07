@@ -1,5 +1,5 @@
-public class WoodGatheringChallenge extends ChallengeSquare {
-    public WoodGatheringChallenge(RenderObject renderObject) {
+public class WoodGatheringCorner extends CornerSquare {
+    public WoodGatheringCorner(RenderObject renderObject) {
         super("Forest", renderObject);
     }
 

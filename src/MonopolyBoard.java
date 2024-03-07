@@ -83,7 +83,7 @@ public class MonopolyBoard extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            if (underlyingSquare instanceof ChallengeSquare) {
+            if (underlyingSquare instanceof CornerSquare) {
                 g.setColor(Color.RED);
             } else {
                 g.setColor(Color.GREEN);

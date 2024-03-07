@@ -1,5 +1,5 @@
-public class ChallengeSquare extends Square {
-    public ChallengeSquare(String name, RenderObject renderObject) {
+public class CornerSquare extends Square {
+    public CornerSquare(String name, RenderObject renderObject) {
         super(name, renderObject);
     }
 

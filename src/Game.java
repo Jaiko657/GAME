@@ -57,13 +57,13 @@ class Game {
                     return new StartingSquare(renderObject);
                 }
                 case 5 -> {
-                    return new WormHuntChallenge(renderObject);
+                    return new WormHuntCorner(renderObject);
                 }
                 case 10 -> {
-                    return new WoodGatheringChallenge(renderObject);
+                    return new WoodGatheringCorner(renderObject);
                 }
                 case 15 -> {
-                    return new MarketDonationChallenge(renderObject);
+                    return new MarketDonationCorner(renderObject);
                 }
                 default -> throw new RuntimeException();
             }

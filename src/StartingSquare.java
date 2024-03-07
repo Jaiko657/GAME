@@ -1,4 +1,4 @@
-public class StartingSquare extends ChallengeSquare {
+public class StartingSquare extends CornerSquare {
     private int spareWood = 500;
     public StartingSquare(RenderObject renderObject) {
         super("Starting Square", renderObject);

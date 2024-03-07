@@ -1,5 +1,5 @@
-public class MarketDonationChallenge extends ChallengeSquare {
-    public MarketDonationChallenge(RenderObject renderObject) {
+public class MarketDonationCorner extends CornerSquare {
+    public MarketDonationCorner(RenderObject renderObject) {
         super("Market", renderObject);
     }
 
