@@ -5,12 +5,20 @@ public class WoodGatheringChallenge extends ChallengeSquare {
 
     @Override
     public void landOnSquare(Player player, Input input) {
-        super.landOnSquare(player, input);
         var con = input.getCon();
         con.println("You've entered a local forest to gather wood. Choose your path: 'short' for a quick but less rewarding route, or 'long' for a challenging but potentially more rewarding journey.");
-        String choice = input.getString("Enter 'short' or 'long': ");
+        con.println("1. Short");
+        con.println("2. Long");
+        var choice = 1;
+        while(true) {
+            choice = input.getInt("Choice");
+            if(choice == 1 || choice == 2) {
+                break;
+            }
+            con.println("Invalid Choice Please type 1 or 2");
+        }
         int woodCollected;
-        if ("long".equalsIgnoreCase(choice)) {
+        if (choice == 1) {
             woodCollected = (int) (Math.random() * 15 + 5); // Generates between 5 to 20 units of wood
             con.println("You took the challenging path and collected " + woodCollected + " units of wood!");
         } else {

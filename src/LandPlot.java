@@ -7,11 +7,23 @@ public class LandPlot extends Square {
 
     private boolean hasBuilding;
 
-    public LandPlot(String name, RenderObject renderObject, int laborCost, int woodCost, int wormCost, BuildingType buildingType) {
+    public LandPlot(String name, RenderObject renderObject, BuildingType buildingType) {
         super(name, renderObject);
-        this.laborCost = laborCost;
-        this.woodCost = woodCost;
-        this.wormCost = wormCost;
+        switch(buildingType) {
+            case WORM_BREEDER -> {
+                this.laborCost = 500;
+                this.woodCost = 500;
+                this.wormCost = 50;
+            }
+            case TOILET -> {
+                this.laborCost = 800;
+                this.woodCost = 500;
+                this.wormCost = 100;
+            }
+            default -> {
+                throw new RuntimeException("Invalid Building Type");
+            }
+        }
         this.buildingType = buildingType;
     }
     public boolean getHasBuilding() {
@@ -42,7 +54,7 @@ public class LandPlot extends Square {
         }
         con.println(this.name + " is not owned");
         if(canPlayerAfford(player)) {
-            con.println("Would you like to take ownership this land plot?");
+            con.println("\nWould you like to take ownership this community land plot?");
             switch(this.buildingType) {
                 case TOILET:
                     con.println("It can have a Toilet for the community built on it!");
@@ -50,9 +62,17 @@ public class LandPlot extends Square {
                 case WORM_BREEDER:
                     con.println("It can have a worm breeder to help you build more toilets built on it!");
                     break;
-                case TOILET_OR_BREEDER:
-                    con.println("It can have a Toilet for the community built on it or a worm breeder to help you build more toilets built on it!");
-                    break;
+//                case TOILET_OR_BREEDER:
+//                    con.println("It can have a Toilet for the community built on it or a worm breeder to help you build more toilets built on it!");
+//                    break;
+            }
+            var ownershipChoice = input.getBool("Do you want to take ownership?");
+            if(ownershipChoice) {
+                this.owner = player;
+                con.println(player.name + " now owns " + this.name);
+                renderObject.update();
+            } else {
+                con.println("You don't want to take control of Land Plot. Next Players Turn!!!");
             }
         } else {
             con.println(player.name + " cannot afford Land Plot");

@@ -5,12 +5,20 @@ public class MarketDonationChallenge extends ChallengeSquare {
 
     @Override
     public void landOnSquare(Player player, Input input) {
-        super.landOnSquare(player, input);
         var con = input.getCon();
         con.println("A local market is willing to donate resources. Do you approach 'vendors' for small guaranteed donations or 'auction' to potentially receive a large donation?");
-        String choice = input.getString("Enter 'vendors' or 'auction': ");
+        con.println("1. Vendors");
+        con.println("2. Auction");
+        var choice = 1;
+        while(true) {
+            choice = input.getInt("Choice");
+            if(choice == 1 || choice == 2) {
+                break;
+            }
+            con.println("Invalid Choice Please type 1 or 2");
+        }
         int donation;
-        if ("auction".equalsIgnoreCase(choice)) {
+        if (choice == 1) {
             // Simulate a 50% chance to win big at the auction
             if (Math.random() < 0.5) {
                 donation = (int) (Math.random() * 100 + 50); // Wins big, between 50 to 150 units

@@ -19,7 +19,7 @@ public class MonopolyBoard extends JFrame {
             //TODO: New line for each player
             var board = game.getBoard();
             this.underlyingSquare = board[guiToBoardTranslationIndexes[boardIndex]];
-            add(new JLabel(this.underlyingSquare.name));
+            add(new JLabel(centerStringWithPadding(this.underlyingSquare.name)));
 
             var players = game.getPlayers();
             for(int i = 0; i < players.size(); i++) {
@@ -40,6 +40,19 @@ public class MonopolyBoard extends JFrame {
                 }
             }
         }
+        public String centerStringWithPadding(String input) {
+            int totalPadding = 20 - input.length();
+            int paddingStart = totalPadding / 2;
+            int paddingEnd = totalPadding - paddingStart;
+            String padStringStart = "=".repeat(paddingStart);
+            String padStringEnd = "=".repeat(paddingEnd);
+            if(padStringEnd.length() == 1) {
+                padStringEnd = "";
+            }
+
+            return padStringStart + input + padStringEnd;
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

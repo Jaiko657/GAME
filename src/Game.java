@@ -41,8 +41,8 @@ class Game {
             //TODO: Add logic to add each player; {
             players.add(new Player("PLAYER1", this.monopolyBoard));
             players.add(new Player("PLAYER2", this.monopolyBoard));
-            players.add(new Player("PLAYER3", this.monopolyBoard));
-            players.add(new Player("PLAYER4", this.monopolyBoard));
+//            players.add(new Player("PLAYER3", this.monopolyBoard));
+//            players.add(new Player("PLAYER4", this.monopolyBoard));
             // }
 
             this.monopolyBoard.refreshDisplay();
@@ -68,30 +68,30 @@ class Game {
             }
         }
         //Land Plot
-        int cost;
-        int capacity;
-        int plotNumber = i;
+        String name = null;
+        BuildingType buildingType = null;
         if(i < 5) {
-            cost = 100;
-            capacity = 2;
+            name = "Worm Breeder Plot " + i;
+            buildingType = BuildingType.WORM_BREEDER;
         } else if(i < 10) {
-            cost = 150;
-            capacity = 3;
-            plotNumber -= 1;
+            i -= 1;
+            name = "Worm Breeder Plot " + i;
+            buildingType = BuildingType.WORM_BREEDER;
         } else if(i < 15) {
-            cost = 200;
-            capacity = 4;
-            plotNumber -= 2;
+            i -= 10;
+            name = "Toilet Plot " + i;
+            buildingType = BuildingType.TOILET;
         } else if(i < 20) {
-            cost = 250;
-            capacity = 5;
-            plotNumber -= 3;
+            i -= 11;
+            name = "Toilet Plot " + i;
+            buildingType = BuildingType.TOILET;
         } else {
             throw new RuntimeException("SHOULDNT OCCUR");
         }
-        return new LandPlot("Plot " + plotNumber, renderObject, laborCost, woodCost, wormCost, buildingType);
+        return new LandPlot(name, renderObject, buildingType);
     }
     public void startNextTurn() {
+        con.clear();
         Player currentPlayer = players.get(currentPlayerIndex);
         Square currentSquare = board[currentPlayer.getCurrentPosition()];
         con.println("\nIts " + currentPlayer.name + " turn.");
@@ -103,11 +103,10 @@ class Game {
 
         while (!actionSelected) {
             var currentPlayerLandPlots = getPlayerLandPlots(currentPlayer);
-            var currentPlayerBuildingSpaces = getLandPlotEmptySpaces(currentPlayerLandPlots);
             boolean manageLandPlotsOptionAvailable = !currentPlayerLandPlots.isEmpty();
             con.println("1:" + " Roll Dice");
             if (manageLandPlotsOptionAvailable) {
-                con.println("2:" + " Manage Land Plots (" + currentPlayerLandPlots.size() + " LandPlots, " + currentPlayerBuildingSpaces + " Building Spaces)");
+                con.println("2:" + " Complete Tasks on Land Plots (Own" + currentPlayerLandPlots.size() + " LandPlots");
             }
             con.println("3:" + " Finish Game");
 
@@ -118,9 +117,12 @@ class Game {
                     //before move
                     int diceRoll1 = Dice.roll();
                     int diceRoll2 = Dice.roll();
+                    con.println();
                     con.println(currentPlayer.name + " Rolled a " + diceRoll1 + " and a " + diceRoll2);
                     int moveAmount = diceRoll1 + diceRoll2;
+                    con.println();
                     con.println("Moving " + moveAmount + " Squares");
+                    con.println();
                     movePlayer(currentPlayer, moveAmount);
 
                     //after move
@@ -150,27 +152,13 @@ class Game {
     }
 
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-        con.println(currentPlayer.name +" has " + currentPlayerLandPlots.size() + " LandPlots with " + getLandPlotEmptySpaces(currentPlayerLandPlots) + " empty building spaces:");
-        //TODO: LANDPLOTS MAY BE FULL
-        var wantToBuild = input.getBool("Would you like to build on your Land Plots?");
-        if (wantToBuild) {
-        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
-            var plot = currentPlayerLandPlots.get(i);
-            con.println((i + 1) + ": " + plot.name + " has " + (plot.buildingCapacity - plot.getBuildingCount()) + " spaces free.");
-        }
-            var buildChoice = input.getInt("Enter Plot Number to build on");
-            //TODO: ADD PROPER VALIDATION
-            assert (buildChoice > -1 && buildChoice <= currentPlayerLandPlots.size());
+        //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP AND TAKING OUT COMPOSITE
+        //use input.getInt(prompt) to get choice between 3 choices
+        //choice 1, collect compost from toilets that are built
+        //choice 2, collect worms from breeder
+        //choice 3, Begin Construction of Building on plot
 
-            LandPlot chosenPlot = currentPlayerLandPlots.get(buildChoice-1);
-            if((chosenPlot.buildingCapacity - chosenPlot.getBuildingCount()) > 0) {
-                //VALID CHOICE
-                buildBuilding(chosenPlot);
-            } else {
-                //TODO: add while loop here to allow invalid choice
-                throw new RuntimeException("CANT ADD BUILDING PLOT FULL");
-            }
-        }
+        con.println("MANAGE PLOTS TODO");
     }
     private void buildBuilding(LandPlot chosenPlot) {
         //TODO: GO THROUGH PAYING FOR EACH STEP
@@ -198,11 +186,21 @@ class Game {
         }
     }
     private void movePlayer(Player player, int steps) {
-        // have to increment and modulo in one function or the displayed value will be more than max for a single tick
-        player.setCurrentPosition((player.getCurrentPosition() + steps) % BOARD_SIZE);
-        monopolyBoard.refreshDisplay();
+        try {
+            Thread.sleep(600);
+            for (int i = 0; i < steps; i++) {
+                // Sleep for 300ms before moving to the next position
+                Thread.sleep(300);
+                // Increment position by 1 and modulo with BOARD_SIZE to ensure it doesn't exceed board size
+                player.setCurrentPosition((player.getCurrentPosition() + 1) % BOARD_SIZE);
+                // Refresh the display to show the new position
+                monopolyBoard.refreshDisplay();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Movement interrupted");
+        }
     }
-
     private ArrayList<LandPlot> getPlayerLandPlots(Player player) {
         var plots = new ArrayList<LandPlot>();
         for(Square s : this.board) {
@@ -223,8 +221,9 @@ class Game {
                 final var owner = plot.getOwner();
                 if(owner == null) continue;
 
-                owner.setWorms(owner.getWorms() + plot.wormBreederCount * CONSTANTS.wormBreederWormAmount);
-                owner.setWorms(owner.getWorms() + plot.upgradedWormBreederCount * CONSTANTS.upgradedWormBreederWormAmount);
+                //TODO: REIMPLEMENT FOR NEW TYPE OF LANDPLOTS
+//                owner.setWorms(owner.getWorms() + plot.wormBreederCount * CONSTANTS.wormBreederWormAmount);
+//                owner.setWorms(owner.getWorms() + plot.upgradedWormBreederCount * CONSTANTS.upgradedWormBreederWormAmount);
             }
         }
     }
@@ -243,7 +242,7 @@ class Game {
                     for(int i = 0; i < players.size(); i++) {
                         if(players.get(i) == owner) {
                             //TODO: CHECK SCORES CORRECT
-                            toiletScores.set(i, toiletScores.get(i) + plot.smallToiletCount + plot.largeToiletCount * 2);
+                            toiletScores.set(i, toiletScores.get(i) + 1);
                         }
                     }
                 }
