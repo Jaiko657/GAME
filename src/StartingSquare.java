@@ -12,7 +12,7 @@ public class StartingSquare extends ChallengeSquare {
             return;
         }
         con.println("You arrive back where you began. Luckily there is some backup materials!\nThere is "+this.spareWood+" wood available how much do you want to take. Remember it is important to work together so if you don't need wood type 0.");
-        int choice = 0;
+        int choice;
         while(true) {
             choice = input.getInt("Amount of Wood you want to take(less than "+this.spareWood+")");
             if(choice <= this.spareWood && choice >= 0) {
@@ -22,5 +22,6 @@ public class StartingSquare extends ChallengeSquare {
         }
         this.spareWood -= choice;
         player.setWood(player.getWood() + choice);
+        input.getString("Press Enter to finish turn");
     }
 }

@@ -27,5 +27,6 @@ public class WormHuntChallenge extends ChallengeSquare {
             con.println("Foraging around, you've collected " + wormsCollected + " worms.");
         }
         player.setWorms(player.getWorms() + wormsCollected);
+        input.getString("Press Enter to finish turn");
     }
 }
