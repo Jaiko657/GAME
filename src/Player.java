@@ -24,7 +24,7 @@ public class Player {
         //TODO: CHOSE STARTING MONEY
         this.money = 5000;
         this.wood = 2000;
-        this.worms = 250;
+        this.worms = 90;
         this.statsGUI = new PlayerStatsGUI(this, monopolyBoard);
         this.statsGUI.setVisible(true);
     }

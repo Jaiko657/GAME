@@ -13,11 +13,11 @@ public class LandPlot extends Square {
             case WORM_BREEDER -> {
                 this.laborCost = 500;
                 this.woodCost = 500;
-                this.wormCost = 50;
+                this.wormCost = 30;
             }
             case TOILET -> {
                 this.laborCost = 800;
-                this.woodCost = 500;
+                this.woodCost = 600;
                 this.wormCost = 100;
             }
             default -> {
@@ -25,6 +25,7 @@ public class LandPlot extends Square {
             }
         }
         this.buildingType = buildingType;
+        this.hasBuilding = false;
     }
     public boolean getHasBuilding() {
         return this.hasBuilding;

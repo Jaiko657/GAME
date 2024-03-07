@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,27 @@ public class MonopolyBoard extends JFrame {
             this.underlyingSquare = board[guiToBoardTranslationIndexes[boardIndex]];
             add(new JLabel(centerStringWithPadding(this.underlyingSquare.name)));
 
+            if(underlyingSquare instanceof LandPlot) {
+                var landPlot = (LandPlot) this.underlyingSquare;
+                if (landPlot.getHasBuilding()) {
+                    try {
+                        Image image;
+                        if (landPlot.buildingType == BuildingType.WORM_BREEDER) {
+                            image = ImageIO.read(new File("src/breeder.png"));
+                        } else {
+                            image = ImageIO.read(new File("src/toilet.png"));
+                        }
+                        ImageIcon icon = new ImageIcon(image);
+
+                        JLabel imageLabel = new JLabel(icon);
+                        add(imageLabel);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
+                }
+            }
+
             var players = game.getPlayers();
             for(int i = 0; i < players.size(); i++) {
                 var player = players.get(i);
@@ -29,7 +53,8 @@ public class MonopolyBoard extends JFrame {
                     playerLabel.setForeground(player.color);
 
                     if(underlyingSquare instanceof LandPlot) {
-                        if(((LandPlot) this.underlyingSquare).getOwner() == player) {
+                        var landPlot = (LandPlot) this.underlyingSquare;
+                        if(landPlot.getOwner() == player) {
                             playerLabel.setForeground(new Color(
                                     255 - player.color.getRed(),
                                     255 - player.color.getGreen(),
@@ -39,6 +64,7 @@ public class MonopolyBoard extends JFrame {
                     add(playerLabel);
                 }
             }
+
         }
         public String centerStringWithPadding(String input) {
             int totalPadding = 20 - input.length();
@@ -56,18 +82,21 @@ public class MonopolyBoard extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if(underlyingSquare instanceof ChallengeSquare) {
+
+            if (underlyingSquare instanceof ChallengeSquare) {
                 g.setColor(Color.RED);
             } else {
                 g.setColor(Color.GREEN);
-                var owner = ((LandPlot) underlyingSquare).getOwner();
-                if(owner != null) {
-                    g.setColor(owner.color);
+                if (underlyingSquare instanceof LandPlot) {
+                    LandPlot landPlot = (LandPlot) underlyingSquare;
+                    var owner = landPlot.getOwner();
+                    if (owner != null) {
+                        g.setColor(owner.color);
+                    }
                 }
             }
             g.fillRect(0, 0, getWidth(), getHeight());
         }
-
         @Override
         public Dimension getPreferredSize() {
             // Size of the square side in pixels

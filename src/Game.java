@@ -35,6 +35,7 @@ class Game {
 
         this.monopolyBoard = new MonopolyBoard(this);
         this.renderObject.setMonopolyBoard(this.monopolyBoard);
+        //BASICALLY AN ASSERTION TO ENSURE NO ERROR
         if (this.renderObject.isActive() == false) {
             throw new RuntimeException("Renderer Not Set Up");
         }
@@ -86,7 +87,7 @@ class Game {
             name = "Toilet Plot " + i;
             buildingType = BuildingType.TOILET;
         } else {
-            throw new RuntimeException("SHOULDNT OCCUR");
+            throw new RuntimeException("WONT OCCUR UNLESS ERROR IN CALLING LOOP");
         }
         return new LandPlot(name, renderObject, buildingType);
     }
@@ -113,7 +114,7 @@ class Game {
             final var userChoice = input.getInt("Enter Choice");
             switch (userChoice) {
                 case 1:
-                    input.getString("Press Enter to Roll");
+                    input.getString("\nPress Enter to Roll");
                     //before move
                     int diceRoll1 = Dice.roll();
                     int diceRoll2 = Dice.roll();
