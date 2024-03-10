@@ -12,7 +12,7 @@ public class Player {
 
     static private int nextId;
 
-    private final PlayerStatsGUI statsGUI;
+    private PlayerStatsGUI statsGUI;
 
     private final static Color[] colorArray = {Color.BLUE, Color.RED, Color.MAGENTA, Color.ORANGE};
 
@@ -25,8 +25,10 @@ public class Player {
         this.money = 5000;
         this.wood = 2000;
         this.worms = 90;
-        this.statsGUI = new PlayerStatsGUI(this, monopolyBoard);
-        this.statsGUI.setVisible(true);
+        if(monopolyBoard != null) {
+            this.statsGUI = new PlayerStatsGUI(this, monopolyBoard);
+            this.statsGUI.setVisible(true);
+        }
     }
 
     @Override
@@ -47,7 +49,9 @@ public class Player {
 
     public void setCurrentPosition(int newPos) {
         this.currentPosition = newPos;
-        this.statsGUI.refreshDisplay();
+        if(this.statsGUI != null) {
+            this.statsGUI.refreshDisplay();
+        }
     }
 
     public int getMoney() {
@@ -56,7 +60,9 @@ public class Player {
 
     public void setMoney(int money) {
         this.money = money;
-        statsGUI.refreshDisplay();
+        if(this.statsGUI != null) {
+            this.statsGUI.refreshDisplay();
+        }
     }
 
     public int getWood() {
@@ -65,7 +71,9 @@ public class Player {
 
     public void setWood(int wood) {
         this.wood = wood;
-        statsGUI.refreshDisplay();
+        if(this.statsGUI != null) {
+            this.statsGUI.refreshDisplay();
+        }
     }
 
     public int getWorms() {
@@ -74,6 +82,8 @@ public class Player {
 
     public void setWorms(int worms) {
         this.worms = worms;
-        statsGUI.refreshDisplay();
+        if(this.statsGUI != null) {
+            this.statsGUI.refreshDisplay();
+        }
     }
 }
