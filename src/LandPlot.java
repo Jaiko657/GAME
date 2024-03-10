@@ -43,7 +43,9 @@ public class LandPlot extends Square {
                 con.println("\tLabor Cost: " + laborCost + ", Wood Needed: " + woodCost + ", Worms Needed: " + wormCost);
 
                 this.building = new Building(buildingType);
-                renderObject.update();
+                if(renderObject.isActive()) {
+                    renderObject.update();
+                }
             }
         }
     }
@@ -105,7 +107,9 @@ public class LandPlot extends Square {
         if(ownershipChoice) {
             this.owner = player;
             con.println(player.name + " now owns " + this.name);
-            renderObject.update();
+            if(renderObject.isActive()) {
+                renderObject.update();
+            }
         } else {
             con.println("You don't want to take control of Land Plot.");
             con.println("\nWould Anyone Else Like to take control of the Plot");
