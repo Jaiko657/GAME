@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,7 +85,7 @@ public class MonopolyBoard extends JFrame {
             super.paintComponent(g);
 
             if (underlyingSquare instanceof CornerSquare) {
-                g.setColor(Color.RED);
+                g.setColor(Color.GREEN.darker());
             } else {
                 g.setColor(Color.GREEN);
                 if (underlyingSquare instanceof LandPlot) {
@@ -216,5 +217,8 @@ public class MonopolyBoard extends JFrame {
 
     public void refreshDisplay() {
         createBoardSections(this.game);
+    }
+    public ArrayList<Player> getPlayers() {
+        return game.getPlayers();
     }
 }

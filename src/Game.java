@@ -35,18 +35,23 @@ class Game {
         this.monopolyBoard = new MonopolyBoard(this);
         this.renderObject.setMonopolyBoard(this.monopolyBoard);
         //BASICALLY AN ASSERTION TO ENSURE NO ERROR
-        if (this.renderObject.isActive() == false) {
+        if (!this.renderObject.isActive()) {
             throw new RuntimeException("Renderer Not Set Up");
         }
-        //TODO: Add logic to add each player; {
         con.println("Add Players");
         con.gainFocus();
         int playerCount = 0;
         boolean isValid = false;
         while(!isValid) {
             playerCount = input.getInt("How Many Players (2-4)");
-            //TODO: REMOVE BREAK LINE
-            if(playerCount == -1) break;
+            //TODO: Use -1 as testing
+            if(playerCount == -1) {
+                players.add(new Player("PLAYER1", this.monopolyBoard));
+                players.add(new Player("PLAYER2", this.monopolyBoard));
+                ((LandPlot)this.board[14]).setOwner(players.get(0));
+                ((LandPlot)this.board[14]).forceBuildBuilding();
+                break;
+            }
             if(playerCount > 1 && playerCount < 5) {
                 isValid = true;
             } else {
@@ -57,25 +62,11 @@ class Game {
             players.add(new Player(input.getString("Player " + (i+1) + " Name"), this.monopolyBoard));
             con.gainFocus();
         }
-        players.add(new Player("PLAYER1", this.monopolyBoard));
-        players.add(new Player("PLAYER2", this.monopolyBoard));
-//            players.add(new Player("PLAYER3", this.monopolyBoard));
-//            players.add(new Player("PLAYER4", this.monopolyBoard));
-        // }
 
-            this.monopolyBoard.refreshDisplay();
-
-            //TODO: REMOVE
-            ((LandPlot)board[8]).setOwner(players.get(0));
-        }
+        this.monopolyBoard.refreshDisplay();
+    }
     static public Square getCorrectSquare(int i, RenderObject renderObject) {
-        if(i == 2) {
-            var test = new LandPlot("TEST", renderObject, BuildingType.WORM_BREEDER);
-            test.forceBuildBuilding();
-            return test;
-        }
         if((i % 5) == 0) {
-            String name;
             switch (i) {
                 case 0 -> {
                     return new BaseCampSquare(renderObject);
@@ -117,6 +108,7 @@ class Game {
     }
     public void startNextTurn() {
         con.clear();
+        con.gainFocus();
         Player currentPlayer = players.get(currentPlayerIndex);
         Square currentSquare = board[currentPlayer.getCurrentPosition()];
         con.println("\nIts " + currentPlayer.name + " turn.");
@@ -177,41 +169,40 @@ class Game {
     }
 
     private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-        var unbuiltPlots = new ArrayList<LandPlot>();
-        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
-            var plot = currentPlayerLandPlots.get(i);
-            if(!plot.getHasBuilding()) {
-                unbuiltPlots.add(plot);
-            }
-        }
-        var breederPlots = new ArrayList<LandPlot>();
-        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
-            var plot = currentPlayerLandPlots.get(i);
-            if(plot.getHasBuilding() && plot.buildingType == BuildingType.WORM_BREEDER) {
-                breederPlots.add(plot);
-            }
-        }
-        var toiletPlots = new ArrayList<LandPlot>();
-        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
-            var plot = currentPlayerLandPlots.get(i);
-            if(plot.getHasBuilding() && plot.buildingType == BuildingType.TOILET) {
-                toiletPlots.add(plot);
-            }
-        }
-        //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP AND TAKING OUT COMPOSITE
-        // Managing Plots for the current player
-        con.clear();
-        con.println("Managing Plots for: " + currentPlayer.name);
+        //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP
 
         boolean finishedManaging = false;
         while (!finishedManaging) {
-            if(unbuiltPlots.size() > 0) {
+            var unbuiltPlots = new ArrayList<LandPlot>();
+            for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+                var plot = currentPlayerLandPlots.get(i);
+                if(!plot.getHasBuilding()) {
+                    unbuiltPlots.add(plot);
+                }
+            }
+            var breederPlots = new ArrayList<LandPlot>();
+            for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+                var plot = currentPlayerLandPlots.get(i);
+                if(plot.getHasBuilding() && plot.buildingType == BuildingType.WORM_BREEDER) {
+                    breederPlots.add(plot);
+                }
+            }
+            var toiletPlots = new ArrayList<LandPlot>();
+            for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+                var plot = currentPlayerLandPlots.get(i);
+                if(plot.getHasBuilding() && plot.buildingType == BuildingType.TOILET) {
+                    toiletPlots.add(plot);
+                }
+            }
+            con.clear();
+            con.println("\nCompleting Tasks for: " + currentPlayer.name);
+            if(!unbuiltPlots.isEmpty()) {
                 con.println("1: Build on a plot");
             }
-            if(breederPlots.size() > 0) {
+            if(!breederPlots.isEmpty()) {
                 con.println("2: Collect worms");
             }
-            if(toiletPlots.size() > 0) {
+            if(!toiletPlots.isEmpty()) {
                 con.println("3: Collect Compost");
             }
             con.println("0: Finish Managing Plots");
@@ -222,21 +213,21 @@ class Game {
                     finishedManaging = true;
                     break;
                 case 1:
-                    if(unbuiltPlots.size() == 0) {
+                    if(unbuiltPlots.isEmpty()) {
                         con.println("Invalid option, please try again.");
                         break;
                     }
                     buildBuildings(currentPlayer, unbuiltPlots);
                     break;
                 case 2:
-                    if(breederPlots.size() == 0) {
+                    if(breederPlots.isEmpty()) {
                         con.println("Invalid option, please try again.");
                         break;
                     }
                     collectWorms(currentPlayer, breederPlots);
                     break;
                 case 3:
-                    if(toiletPlots.size() == 0) {
+                    if(toiletPlots.isEmpty()) {
                         con.println("Invalid option, please try again.");
                         break;
                     }
@@ -248,6 +239,7 @@ class Game {
                     con.println("Invalid option, please try again.");
             }
         }
+        con.clear();
     }
 
     private void collectWorms(Player currentPlayer, ArrayList<LandPlot> wormPlots) {
@@ -269,27 +261,45 @@ class Game {
             currentPlayer.setWorms(currentPlayer.getWorms() + worms);
             con.println(currentPlayer.name + " has just gained " + worms + "worms!");
         }
+        input.getString("Press Enter to Continue");
     }
 
     private void collectCompost(Player currentPlayer, ArrayList<LandPlot> toiletPlots) {
         var con = this.input.getCon();
-        con.println("Toilets Built:");
-        for(int i = 0; i < toiletPlots.size();i++) {
+        con.println("Toilets with Compost:");
+        for (int i = 0; i < toiletPlots.size(); i++) {
             var plot = toiletPlots.get(i);
             con.println(plot.name + " contains " + plot.getBuilding().getContent() + " compost");
         }
 
-        var choice = input.getBool("Would you like to collect the compost that have been bred?");
-        if(!choice) {
+        var choice = input.getBool("Would you like to collect the compost from the toilets?");
+        if (!choice) {
             input.getString("Press Enter to Continue");
             return;
         }
+        int compost = 0;
         for (int i = 0; i < toiletPlots.size(); i++) {
             var plot = toiletPlots.get(i);
-            var worms = plot.getBuilding().takeContent();
-            currentPlayer.setWorms(currentPlayer.getWorms() + worms);
-            con.println(currentPlayer.name + " has just gained " + worms + "worms!");
+            var compostContent = plot.getBuilding().takeContent();
+            compost += compostContent;
+            con.println(currentPlayer.name + " has just gained " + compost + " compost!");
         }
+        con.println("\nThis compost is the communities compost but the community provides wood in exchange for compost to help support the project!");
+
+        con.println("The community gives what they can for the compost and there is no set price.");
+        int woodDonationAmount = (int) ((int) compost * Math.random() * 2);
+        woodDonationAmount /= 100;
+        woodDonationAmount *= 100;
+
+        con.println("\nToday the community can provide " + woodDonationAmount + " wood in exchange for the compost\n");
+
+        if(woodDonationAmount > 0) {
+            con.println(currentPlayer.name + " gained " + woodDonationAmount + " wood!!!");
+            currentPlayer.setWood(currentPlayer.getWood() + woodDonationAmount);
+        } else {
+            con.println(currentPlayer.name + " has gained no wood as community has not enough spare resources to donate");
+        }
+        input.getString("Press Enter to Continue");
     }
 
     private void buildBuildings(Player currentPlayer, ArrayList<LandPlot> unbuiltPlots) {
@@ -310,12 +320,7 @@ class Game {
             }
         }
         unbuiltPlots.get(choice-1).buildBuilding(input);
-
-        /*
-            1: Pay Workers
-            2: Provide Wood
-            3: Provide Worms
-        */
+        input.getString("Press Enter to Continue");
     }
     private void checkEndGame() {
         for(Player player : this.players) {
@@ -363,10 +368,9 @@ class Game {
     }
 
     public void tickGameLogic() {
-        //TODO: THIS WILL BE FOR RUNNING PASSIVE PER TERM FARMS ETC
+        //Runs every turn allowing toilets to create compost and worm breeders to create worms
         for(Square s : this.board) {
             if(s instanceof LandPlot plot) {
-                var landPlot = (LandPlot) plot;
                 plot.tick();
             }
         }
@@ -381,12 +385,14 @@ class Game {
 
         for(Square s : this.board) {
             if(s instanceof LandPlot plot) {
-                final var owner = plot.getOwner();
-                if(owner != null) {
-                    for(int i = 0; i < players.size(); i++) {
-                        if(players.get(i) == owner) {
-                            //TODO: CHECK SCORES CORRECT
-                            toiletScores.set(i, toiletScores.get(i) + 1);
+                if (plot.buildingType == BuildingType.TOILET) {
+                    final var owner = plot.getOwner();
+                    if (owner != null) {
+                        for (int i = 0; i < players.size(); i++) {
+                            if (players.get(i) == owner) {
+                                //TODO: CHECK SCORES CORRECT
+                                toiletScores.set(i, toiletScores.get(i) + 1);
+                            }
                         }
                     }
                 }

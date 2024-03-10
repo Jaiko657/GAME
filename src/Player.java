@@ -14,7 +14,7 @@ public class Player {
 
     private final PlayerStatsGUI statsGUI;
 
-    private final static Color[] colorArray = {Color.BLUE, Color.CYAN, Color.MAGENTA, Color.ORANGE};
+    private final static Color[] colorArray = {Color.BLUE, Color.RED, Color.MAGENTA, Color.ORANGE};
 
     public Player(String name, MonopolyBoard monopolyBoard) {
         this.id = nextId++;

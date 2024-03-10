@@ -57,6 +57,9 @@ public class LandPlot extends Square {
     //TODO: Way to give away ownership of plot
     public void setOwner(Player owner) {
         this.owner = owner;
+        if(renderObject.isActive()) {
+            renderObject.update();
+        }
     }
     public Player getOwner() {
         return this.owner;
@@ -93,9 +96,6 @@ public class LandPlot extends Square {
             case WORM_BREEDER:
                 con.println("It can have a worm breeder to help you build more toilets built on it!");
                 break;
-//                case TOILET_OR_BREEDER:
-//                    con.println("It can have a Toilet for the community built on it or a worm breeder to help you build more toilets built on it!");
-//                    break;
         }
         var ownershipChoice = input.getBool("Do you want to take ownership?");
         if(ownershipChoice) {
@@ -103,7 +103,40 @@ public class LandPlot extends Square {
             con.println(player.name + " now owns " + this.name);
             renderObject.update();
         } else {
-            con.println("You don't want to take control of Land Plot. Next Players Turn!!!");
+            con.println("You don't want to take control of Land Plot.");
+            con.println("\nWould Anyone Else Like to take control of the Plot");
+            var players = renderObject.getPlayers();
+            int invalidIndex = 0;
+            for(int i = 0; i < players.size(); i++) {
+                var pl = players.get(i);
+                if(pl == player) {
+                    invalidIndex = i;
+                    continue;
+                }
+                con.println((i+1) + ": " + pl.name);
+            }
+            con.println("0: Nobody Takes Control");
+            boolean validChoice = false;
+            int ownershipIndex = 0;
+            while(!validChoice) {
+                ownershipIndex = input.getInt("Who Wants to take ownership");
+                if(ownershipIndex == 0) {
+                    con.println("No one wants Land Plot");
+                    return;
+                }
+                if(ownershipIndex != invalidIndex) {
+                    con.println("Invalid Choice");
+                    continue;
+                }
+                if(ownershipIndex > 0 && ownershipIndex <= players.size()) {
+                    validChoice = true;
+                    ownershipIndex--;
+                }
+
+            }
+            var newOwner = players.get(ownershipIndex);
+            con.println("\nNew Owner is " + newOwner.name);
+            setOwner(newOwner);
         }
     }
 
