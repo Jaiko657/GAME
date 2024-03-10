@@ -30,11 +30,34 @@ public class LandPlot extends Square {
         return building != null;
     }
 
-    public void buildBuilding() {
+    public void buildBuilding(Input input) {
+        var con = input.getCon();
+        if(canPlayerAfford(owner)) {
+            con.println(owner.name + " can afford to Build " + buildingType);
+            if(input.getBool("Do You Want to Build?")) {
+                owner.setMoney(owner.getMoney() - this.laborCost);
+                owner.setWood(owner.getWood() - this.woodCost);
+                owner.setWorms(owner.getWorms() - this.wormCost);
+                con.println("You have now built " + buildingType + " on " + this.name);
+                con.println("\tLabor Cost: " + laborCost + ", Wood Needed: " + woodCost + ", Worms Needed: " + wormCost);
+
+                this.building = new Building(buildingType);
+                renderObject.update();
+            }
+        }
+    }
+    //TODO: REMOVE AFTER DEBUG OVER
+    public void forceBuildBuilding() {
         this.building = new Building(buildingType);
     }
 
+    public Building getBuilding() {
+        return this.building;
+    }
     //TODO: Way to give away ownership of plot
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
     public Player getOwner() {
         return this.owner;
     }
@@ -94,22 +117,17 @@ public class LandPlot extends Square {
     private void sellComposite(Player player, Input input) {
         //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
         var con = input.getCon();
-        // Assume there is a method to get the total compost amount stored in the building
-        int compostAmount = building.getAmountStored();
+        //gets and emptys content of compost
+        int compostAmount = building.takeContent();
 
         // Check if there is compost to sell
         if (compostAmount > 0) {
-            // Assuming a fixed price per unit for simplicity. Could be dynamic based on game conditions.
-            int pricePerUnit = 5; // This price can be adjusted as needed
+            int pricePerUnit = (int) Math.random()*4 +1; // rand between 1 - 5
 
             // Calculate the total sale amount
             int totalSaleAmount = compostAmount * pricePerUnit;
-
             // Update player's money
             player.setMoney(player.getMoney() + totalSaleAmount);
-
-            // Reset the compost storage in the building to 0 after selling
-            building.empty();
 
             // Inform the player
             con.println("You sold " + compostAmount + " units of compost to farmers for " + totalSaleAmount + " currency units.");
@@ -117,8 +135,5 @@ public class LandPlot extends Square {
             // Inform the player if there's no compost to sell
             con.println("There is no compost available to sell.");
         }
-
-        // Wait for the player to acknowledge before proceeding
-        input.getString("Press Enter to finish.");
     }
 }

@@ -27,7 +27,6 @@ class Game {
         this.currentPlayerIndex = 0;
         this.renderObject = new RenderObject();
 
-
         this.board = new Square[BOARD_SIZE]; // Define the array with 20 elements
         for (int i = 0; i < BOARD_SIZE; i++) {
             board[i] = getCorrectSquare(i, renderObject);
@@ -39,17 +38,42 @@ class Game {
         if (this.renderObject.isActive() == false) {
             throw new RuntimeException("Renderer Not Set Up");
         }
-            //TODO: Add logic to add each player; {
-            players.add(new Player("PLAYER1", this.monopolyBoard));
-            players.add(new Player("PLAYER2", this.monopolyBoard));
+        //TODO: Add logic to add each player; {
+        con.println("Add Players");
+        con.gainFocus();
+        int playerCount = 0;
+        boolean isValid = false;
+        while(!isValid) {
+            playerCount = input.getInt("How Many Players (2-4)");
+            //TODO: REMOVE BREAK LINE
+            if(playerCount == -1) break;
+            if(playerCount > 1 && playerCount < 5) {
+                isValid = true;
+            } else {
+                con.println("Invalid Amount try again");
+            }
+        }
+        for(int i = 0; i < playerCount; i++) {
+            players.add(new Player(input.getString("Player " + (i+1) + " Name"), this.monopolyBoard));
+            con.gainFocus();
+        }
+        players.add(new Player("PLAYER1", this.monopolyBoard));
+        players.add(new Player("PLAYER2", this.monopolyBoard));
 //            players.add(new Player("PLAYER3", this.monopolyBoard));
 //            players.add(new Player("PLAYER4", this.monopolyBoard));
-            // }
+        // }
 
             this.monopolyBoard.refreshDisplay();
+
+            //TODO: REMOVE
+            ((LandPlot)board[8]).setOwner(players.get(0));
         }
     static public Square getCorrectSquare(int i, RenderObject renderObject) {
-        //ChallengeSquare
+        if(i == 2) {
+            var test = new LandPlot("TEST", renderObject, BuildingType.WORM_BREEDER);
+            test.forceBuildBuilding();
+            return test;
+        }
         if((i % 5) == 0) {
             String name;
             switch (i) {
@@ -105,7 +129,7 @@ class Game {
             boolean manageLandPlotsOptionAvailable = !currentPlayerLandPlots.isEmpty();
             con.println("1:" + " Roll Dice");
             if (manageLandPlotsOptionAvailable) {
-                con.println("2:" + " Complete Tasks on Land Plots (Own" + currentPlayerLandPlots.size() + " LandPlots");
+                con.println("2:" + " Complete Tasks (Own " + currentPlayerLandPlots.size() + " LandPlots)");
             }
             con.println("3:" + " Finish Game");
 
@@ -141,54 +165,152 @@ class Game {
                     }
                     break;
                 case 3:
+                    //finish game
                     isFinished = true;
-                    actionSelected = true; // Exit game
+                    //return to skip Press Enter
+                    return;
+                default:
+                    con.println("Invalid option, please try again.");
+            }
+        }
+        input.getString("Press Enter to finish turn");
+    }
+
+    private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
+        var unbuiltPlots = new ArrayList<LandPlot>();
+        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+            var plot = currentPlayerLandPlots.get(i);
+            if(!plot.getHasBuilding()) {
+                unbuiltPlots.add(plot);
+            }
+        }
+        var breederPlots = new ArrayList<LandPlot>();
+        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+            var plot = currentPlayerLandPlots.get(i);
+            if(plot.getHasBuilding() && plot.buildingType == BuildingType.WORM_BREEDER) {
+                breederPlots.add(plot);
+            }
+        }
+        var toiletPlots = new ArrayList<LandPlot>();
+        for (int i = 0; i < currentPlayerLandPlots.size(); i++) {
+            var plot = currentPlayerLandPlots.get(i);
+            if(plot.getHasBuilding() && plot.buildingType == BuildingType.TOILET) {
+                toiletPlots.add(plot);
+            }
+        }
+        //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP AND TAKING OUT COMPOSITE
+        // Managing Plots for the current player
+        con.clear();
+        con.println("Managing Plots for: " + currentPlayer.name);
+
+        boolean finishedManaging = false;
+        while (!finishedManaging) {
+            if(unbuiltPlots.size() > 0) {
+                con.println("1: Build on a plot");
+            }
+            if(breederPlots.size() > 0) {
+                con.println("2: Collect worms");
+            }
+            if(toiletPlots.size() > 0) {
+                con.println("3: Collect Compost");
+            }
+            con.println("0: Finish Managing Plots");
+
+            final var userChoice = input.getInt("Enter Choice");
+            switch (userChoice) {
+                case 0:
+                    finishedManaging = true;
+                    break;
+                case 1:
+                    if(unbuiltPlots.size() == 0) {
+                        con.println("Invalid option, please try again.");
+                        break;
+                    }
+                    buildBuildings(currentPlayer, unbuiltPlots);
+                    break;
+                case 2:
+                    if(breederPlots.size() == 0) {
+                        con.println("Invalid option, please try again.");
+                        break;
+                    }
+                    collectWorms(currentPlayer, breederPlots);
+                    break;
+                case 3:
+                    if(toiletPlots.size() == 0) {
+                        con.println("Invalid option, please try again.");
+                        break;
+                    }
+                    collectCompost(currentPlayer, toiletPlots);
+                    break;
+                case 4:
                     break;
                 default:
                     con.println("Invalid option, please try again.");
             }
         }
-        input.getString("Press Enter to finish.");
     }
 
-    private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-        //TODO: IMPLEMENT THE EXTRA TASKS LIKE TRANSFERING OWNERSHIP AND TAKING OUT COMPOSITE
-        private void managePlots(Player currentPlayer, ArrayList<LandPlot> currentPlayerLandPlots) {
-            // Managing Plots for the current player
-            con.clear();
-            con.println("Managing Plots for: " + currentPlayer.name);
+    private void collectWorms(Player currentPlayer, ArrayList<LandPlot> wormPlots) {
+        var con = this.input.getCon();
+        con.println("Worm Breeders Build:");
+        for(int i = 0; i < wormPlots.size();i++) {
+            var plot = wormPlots.get(i);
+            con.println(plot.name + " has " + plot.getBuilding().getContent() + " Worms");
+        }
 
-            boolean finishedManaging = false;
-            while (!finishedManaging) {
-                con.println("1: Build on a plot");
-                con.println("2: Collect worms");
-                con.println("3: Collect Compost");
-                con.println("0: Finish Managing Plots");
-
-                final var userChoice = input.getInt("Enter Choice");
-                switch (userChoice) {
-                    case 0:
-                        finishedManaging = true;
-                        break;
-                    case 1:
-                        manageBuildings();
-                        break;
-                    case 2:
-                        collectWorms();
-                        break;
-                    case 3:
-                        collectCompost();
-                        break;
-                    case 4:
-                        break;
-                    default:
-                        con.println("Invalid option, please try again.");
-                }
-            }
+        var choice = input.getBool("Would you like to collect the worms that have been bred?");
+        if(!choice) {
+            input.getString("Press Enter to Continue");
+            return;
+        }
+        for (int i = 0; i < wormPlots.size(); i++) {
+            var plot = wormPlots.get(i);
+            var worms = plot.getBuilding().takeContent();
+            currentPlayer.setWorms(currentPlayer.getWorms() + worms);
+            con.println(currentPlayer.name + " has just gained " + worms + "worms!");
         }
     }
-    private void buildBuilding(LandPlot chosenPlot) {
+
+    private void collectCompost(Player currentPlayer, ArrayList<LandPlot> toiletPlots) {
+        var con = this.input.getCon();
+        con.println("Toilets Built:");
+        for(int i = 0; i < toiletPlots.size();i++) {
+            var plot = toiletPlots.get(i);
+            con.println(plot.name + " contains " + plot.getBuilding().getContent() + " compost");
+        }
+
+        var choice = input.getBool("Would you like to collect the compost that have been bred?");
+        if(!choice) {
+            input.getString("Press Enter to Continue");
+            return;
+        }
+        for (int i = 0; i < toiletPlots.size(); i++) {
+            var plot = toiletPlots.get(i);
+            var worms = plot.getBuilding().takeContent();
+            currentPlayer.setWorms(currentPlayer.getWorms() + worms);
+            con.println(currentPlayer.name + " has just gained " + worms + "worms!");
+        }
+    }
+
+    private void buildBuildings(Player currentPlayer, ArrayList<LandPlot> unbuiltPlots) {
         //TODO: GO THROUGH PAYING FOR EACH STEP
+        con.println(currentPlayer.name + " Owned Empty Land Plots:");
+        for(int i = 0; i < unbuiltPlots.size(); i++) {
+            var plot = unbuiltPlots.get(i);
+            con.println((i+1) + ": " + plot.name + "\n\tLaborCost: " + plot.laborCost + ", Wood Needed: " + plot.woodCost + ", Worms Needed: " + plot.wormCost);
+        }
+        int choice = 0;
+        boolean validChoice = false;
+        while (!validChoice) {
+            choice = input.getInt("Choice");
+            if (choice >= 1 && choice <= unbuiltPlots.size()) {
+                validChoice = true;
+            } else {
+                con.println("Invalid choice, please select a number between 1 and " + unbuiltPlots.size());
+            }
+        }
+        unbuiltPlots.get(choice-1).buildBuilding(input);
+
         /*
             1: Pay Workers
             2: Provide Wood

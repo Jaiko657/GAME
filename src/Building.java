@@ -19,11 +19,13 @@ public class Building {
         }
     }
 
-    public int getAmountStored() {
-        return amountStored;
+    public int getContent() {
+        var ret = this.amountStored;
+        return ret;
     }
-
-    public void empty() {
+    public int takeContent() {
+        var ret = this.amountStored;
         this.amountStored = 0;
+        return ret;
     }
 }
