@@ -5,6 +5,7 @@ public class LandPlot extends Square {
     final public int wormCost;
     final public BuildingType buildingType;
     private Building building;
+    private int turnsSinceRepairs = 0;
 
     public LandPlot(String name, RenderObject renderObject, BuildingType buildingType) {
         super(name, renderObject);
@@ -65,6 +66,7 @@ public class LandPlot extends Square {
         return this.owner;
     }
     public void tick() {
+        turnsSinceRepairs++;
         if(building == null) return;
         building.tick();
     }
@@ -82,7 +84,9 @@ public class LandPlot extends Square {
                 //TODO: MAYBE DO UPGRADE
             } else {
                 con.println(this.name + " is owned already by " + this.owner.name);
-                //TODO: SELLING OWNERSHIP OF PLOT
+                if(turnsSinceRepairs > 10) {
+                    con.println(buildingType + " has not been repaired in some time.\nWould you li");
+                }
             }
             return;
         }

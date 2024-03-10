@@ -50,6 +50,8 @@ class Game {
                 players.add(new Player("PLAYER2", this.monopolyBoard));
                 ((LandPlot)this.board[14]).setOwner(players.get(0));
                 ((LandPlot)this.board[14]).forceBuildBuilding();
+                ((LandPlot)this.board[8]).setOwner(players.get(0));
+                ((LandPlot)this.board[8]).forceBuildBuilding();
                 break;
             }
             if(playerCount > 1 && playerCount < 5) {
