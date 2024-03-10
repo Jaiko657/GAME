@@ -305,7 +305,6 @@ class Game {
     }
 
     private void buildBuildings(Player currentPlayer, ArrayList<LandPlot> unbuiltPlots) {
-        //TODO: GO THROUGH PAYING FOR EACH STEP
         con.println(currentPlayer.name + " Owned Empty Land Plots:");
         for(int i = 0; i < unbuiltPlots.size(); i++) {
             var plot = unbuiltPlots.get(i);
