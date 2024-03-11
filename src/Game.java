@@ -49,9 +49,9 @@ class Game {
                 players.add(new Player("PLAYER1", this.monopolyBoard));
                 players.add(new Player("PLAYER2", this.monopolyBoard));
                 ((LandPlot)this.board[14]).setOwner(players.get(0));
-                ((LandPlot)this.board[14]).forceBuildBuilding();
+                ((LandPlot)this.board[14]).buildBuilding();
                 ((LandPlot)this.board[8]).setOwner(players.get(0));
-                ((LandPlot)this.board[8]).forceBuildBuilding();
+                ((LandPlot)this.board[8]).buildBuilding();
                 break;
             }
             if(playerCount > 1 && playerCount < 5) {
@@ -320,9 +320,36 @@ class Game {
                 con.println("Invalid choice, please select a number between 1 and " + unbuiltPlots.size());
             }
         }
-        unbuiltPlots.get(choice-1).buildBuilding(input);
+        buildBuilding(unbuiltPlots.get(choice-1));
         input.getString("Press Enter to Continue");
     }
+
+    private void buildBuilding(LandPlot plot) {
+        var owner = plot.getOwner();
+        var con = input.getCon();
+        var buildingType = plot.buildingType;
+        if(canPlayerAfford(owner, plot)) {
+            con.println(owner.name + " can afford to Build " + buildingType);
+            if(input.getBool("Do You Want to Build?")) {
+                owner.setMoney(owner.getMoney() - plot.laborCost);
+                owner.setWood(owner.getWood() - plot.woodCost);
+                owner.setWorms(owner.getWorms() - plot.wormCost);
+                con.println("You have now built " + buildingType + " on " + plot.name);
+                con.println("\tLabor Cost: " + plot.laborCost + ", Wood Needed: " + plot.woodCost + ", Worms Needed: " + plot.wormCost);
+
+                plot.buildBuilding();
+                renderObject.update();
+            }
+        }
+    }
+    private boolean canPlayerAfford(Player player, LandPlot plot) {
+        return (
+                player.getMoney() >= plot.laborCost &&
+                player.getWood() >= plot.woodCost &&
+                player.getWorms() >= plot.wormCost
+        );
+    }
+
     private void checkEndGame() {
         for(Player player : this.players) {
             if(player.getMoney() <= 0) {

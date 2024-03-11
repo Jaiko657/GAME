@@ -1,4 +1,4 @@
-public abstract class Square {
+public class Square {
     public final int id;
     public final String name;
     protected final RenderObject renderObject;

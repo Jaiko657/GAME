@@ -5,7 +5,6 @@ public class LandPlot extends Square {
     final public int wormCost;
     final public BuildingType buildingType;
     private Building building;
-    private int turnsSinceRepairs = 0;
 
     public LandPlot(String name, RenderObject renderObject, BuildingType buildingType) {
         super(name, renderObject);
@@ -31,27 +30,9 @@ public class LandPlot extends Square {
         return building != null;
     }
 
-    public void buildBuilding(Input input) {
-        var con = input.getCon();
-        if(canPlayerAfford(owner)) {
-            con.println(owner.name + " can afford to Build " + buildingType);
-            if(input.getBool("Do You Want to Build?")) {
-                owner.setMoney(owner.getMoney() - this.laborCost);
-                owner.setWood(owner.getWood() - this.woodCost);
-                owner.setWorms(owner.getWorms() - this.wormCost);
-                con.println("You have now built " + buildingType + " on " + this.name);
-                con.println("\tLabor Cost: " + laborCost + ", Wood Needed: " + woodCost + ", Worms Needed: " + wormCost);
-
-                this.building = new Building(buildingType);
-                if(renderObject.isActive()) {
-                    renderObject.update();
-                }
-            }
-        }
-    }
-    //TODO: REMOVE AFTER DEBUG OVER
-    public void forceBuildBuilding() {
+    public void buildBuilding() {
         this.building = new Building(buildingType);
+        renderObject.update();
     }
 
     public Building getBuilding() {
@@ -60,24 +41,19 @@ public class LandPlot extends Square {
     //TODO: Way to give away ownership of plot
     public void setOwner(Player owner) {
         this.owner = owner;
-        if(renderObject.isActive()) {
-            renderObject.update();
-        }
+        renderObject.update();
     }
     public Player getOwner() {
         return this.owner;
     }
     public void tick() {
-        turnsSinceRepairs++;
         if(building == null) return;
         building.tick();
     }
 
     @Override
     public void landOnSquare(Player player, Input input) {
-        if(this.renderObject.isActive()) {
-            this.renderObject.update();
-        }
+        this.renderObject.update();
         var con = input.getCon();
         if(this.owner != null) {
             if(this.owner == player) {
@@ -86,8 +62,43 @@ public class LandPlot extends Square {
                 //TODO: MAYBE DO UPGRADE
             } else {
                 con.println(this.name + " is owned already by " + this.owner.name);
-                if(turnsSinceRepairs > 10) {
-                    con.println(buildingType + " has not been repaired in some time.\nWould you li");
+                var donate = input.getBool("To help this community project would you like to donate anything the the owner of this plot");
+                if(donate) {
+                    con.println("What would you like to donate");
+                    con.println("1: Money");
+                    con.println("2: Wood");
+                    con.println("3: Worms");
+
+                    boolean validChoice = false;
+                    int donationChoice = -1;
+                    while(!validChoice) {
+                        donationChoice = input.getInt("Choice (1-3)");
+                        if(donationChoice < 1 || donationChoice > 3) {
+                            con.println("Invalid Choice");
+                            continue;
+                        }
+                        validChoice = true;
+                    }
+                    int donationAmount = -1;
+                    con.print(player.name + " donates ");
+                    switch(donationChoice) {
+                        case 1:
+                            donationAmount = Integer.min(player.getMoney(), 750);
+                            con.print(donationAmount + " Money ");
+                            this.owner.setMoney(donationAmount);
+                            break;
+                        case 2:
+                            donationAmount = Integer.min(player.getWood(), 400);
+                            con.print(donationAmount + " Wood ");
+                            this.owner.setWood(donationAmount);
+                            break;
+                        case 3:
+                            donationAmount = Integer.min(player.getWorms(), 20);
+                            con.print(donationAmount + " Worms ");
+                            this.owner.setMoney(donationAmount);
+                            break;
+                    }
+                    con.println(" to " + this.owner.name);
                 }
             }
             return;
@@ -107,40 +118,39 @@ public class LandPlot extends Square {
         if(ownershipChoice) {
             this.owner = player;
             con.println(player.name + " now owns " + this.name);
-            if(renderObject.isActive()) {
-                renderObject.update();
-            }
+            renderObject.update();
         } else {
             con.println("You don't want to take control of Land Plot.");
             con.println("\nWould Anyone Else Like to take control of the Plot");
             var players = renderObject.getPlayers();
-            int invalidIndex = 0;
+            int invalidIndex = -1; // Use -1 to indicate no invalid index initially
             for(int i = 0; i < players.size(); i++) {
                 var pl = players.get(i);
                 if(pl == player) {
-                    invalidIndex = i;
+                    invalidIndex = i; // Store the index of the player to exclude
                     continue;
                 }
-                con.println((i+1) + ": " + pl.name);
+                con.println((i + 1) + ": " + pl.name); // Display player names, starting from 1
             }
             con.println("0: Nobody Takes Control");
+
             boolean validChoice = false;
-            int ownershipIndex = 0;
+            int ownershipIndex = -1;
             while(!validChoice) {
-                ownershipIndex = input.getInt("Who Wants to take ownership");
-                if(ownershipIndex == 0) {
-                    con.println("No one wants Land Plot");
+                ownershipIndex = input.getInt("Who Wants to take ownership") - 1; // Adjust for 0-based index
+                if(ownershipIndex == -2) {
+                    con.println("No one wants the Land Plot");
                     return;
                 }
-                if(ownershipIndex != invalidIndex) {
-                    con.println("Invalid Choice");
+                if(ownershipIndex == invalidIndex) {
+                    con.println("Invalid Choice, this player cannot take ownership.");
                     continue;
                 }
-                if(ownershipIndex > 0 && ownershipIndex <= players.size()) {
+                if(ownershipIndex >= 0 && ownershipIndex < players.size() && ownershipIndex != invalidIndex) {
                     validChoice = true;
-                    ownershipIndex--;
+                } else {
+                    con.println("Invalid Choice");
                 }
-
             }
             var newOwner = players.get(ownershipIndex);
             con.println("\nNew Owner is " + newOwner.name);
@@ -148,13 +158,6 @@ public class LandPlot extends Square {
         }
     }
 
-    private boolean canPlayerAfford(Player player) {
-        return (
-            player.getMoney() >= this.laborCost &&
-            player.getWood() >= this.woodCost &&
-            player.getWorms() >= this.wormCost
-        );
-    }
     private void sellComposite(Player player, Input input) {
         //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
         var con = input.getCon();
@@ -171,6 +174,7 @@ public class LandPlot extends Square {
             player.setMoney(player.getMoney() + totalSaleAmount);
 
             // Inform the player
+            //TODO: search for currency units and replacec
             con.println("You sold " + compostAmount + " units of compost to farmers for " + totalSaleAmount + " currency units.");
         } else {
             // Inform the player if there's no compost to sell
