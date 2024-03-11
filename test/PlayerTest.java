@@ -6,60 +6,72 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
 
-    static Player player = new Player("Test Player", null);
-    MonopolyBoard monopolyBoard; // Assuming MonopolyBoard is a class you have defined
+    Player player;
 
     @BeforeEach
     void setUp() {
+        this.player = new Player("Test Player", null);
     }
 
     @Test
-    void getCurrentPosition() {
+    void testGetCurrentPosition() {
         assertEquals(0, player.getCurrentPosition());
     }
     @Test
     void testToString() {
-        String expected = "Player{id=0, name='Test Player, currentPosition='0}";
+        var newPlayer = new Player("Test Player", null);
+
+        String expected = "Player{id=" + (newPlayer.id-1) + ", name='Test Player, currentPosition='0}";
         assertEquals(expected, player.toString());
     }
 
     @Test
-    void setCurrentPosition() {
+    void testGetStatsGUIWhenNull() {
+        assertNull(player.getStatsGUI());
+    }
+
+    @Test
+    void testSetCurrentPosition() {
         player.setCurrentPosition(5);
         assertEquals(5, player.getCurrentPosition());
     }
 
     @Test
-    void getMoney() {
-        assertEquals(1000, player.getMoney());
+    void testGetMoney() {
+        assertEquals(5000, player.getMoney());
     }
 
     @Test
-    void setMoney() {
+    void testSetMoney() {
         player.setMoney(1000);
         assertEquals(1000, player.getMoney());
     }
 
     @Test
-    void getWood() {
+    void testGetWood() {
         assertEquals(2000, player.getWood());
     }
 
     @Test
-    void setWood() {
+    void testSetWood() {
         player.setWood(500);
         assertEquals(500, player.getWood());
     }
 
     @Test
-    void getWorms() {
+    void testGetWorms() {
         player.setWorms(90);
         assertEquals(90, player.getWorms());
     }
 
     @Test
-    void setWorms() {
+    void testSetWorms() {
         player.setWorms(50);
         assertEquals(50, player.getWorms());
+    }
+
+    @Test
+    void testMockedGui() {
+
     }
 }
