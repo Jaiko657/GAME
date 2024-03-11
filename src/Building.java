@@ -1,4 +1,5 @@
 public class Building {
+
     final private BuildingType type;
     private int amountStored;
 
@@ -19,6 +20,9 @@ public class Building {
         }
     }
 
+    public BuildingType getType() {
+        return this.type;
+    }
     public int getContent() {
         var ret = this.amountStored;
         return ret;

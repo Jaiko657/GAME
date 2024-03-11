@@ -18,7 +18,7 @@ public class Player {
 
     public Player(String name, MonopolyBoard monopolyBoard) {
         this.id = nextId++;
-        this.color = colorArray[this.id];
+        this.color = colorArray[this.id % 4];
         this.name = name;
         this.currentPosition = 0;
         //TODO: CHOSE STARTING MONEY
@@ -49,9 +49,7 @@ public class Player {
 
     public void setCurrentPosition(int newPos) {
         this.currentPosition = newPos;
-        if(this.statsGUI != null) {
-            this.statsGUI.refreshDisplay();
-        }
+        refreshStatsGUI();
     }
 
     public int getMoney() {
@@ -60,9 +58,7 @@ public class Player {
 
     public void setMoney(int money) {
         this.money = money;
-        if(this.statsGUI != null) {
-            this.statsGUI.refreshDisplay();
-        }
+        refreshStatsGUI();
     }
 
     public int getWood() {
@@ -71,9 +67,7 @@ public class Player {
 
     public void setWood(int wood) {
         this.wood = wood;
-        if(this.statsGUI != null) {
-            this.statsGUI.refreshDisplay();
-        }
+        refreshStatsGUI();
     }
 
     public int getWorms() {
@@ -82,6 +76,10 @@ public class Player {
 
     public void setWorms(int worms) {
         this.worms = worms;
+        refreshStatsGUI();
+    }
+
+    private void refreshStatsGUI() {
         if(this.statsGUI != null) {
             this.statsGUI.refreshDisplay();
         }
