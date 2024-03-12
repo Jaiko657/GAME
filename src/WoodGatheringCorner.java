@@ -18,7 +18,7 @@ public class WoodGatheringCorner extends CornerSquare {
             con.println("Invalid Choice Please type 1 or 2");
         }
         int woodCollected;
-        if (choice == 1) {
+        if (choice == 2) {
             woodCollected = (int) (Math.random() * 15 + 5); // Generates between 5 to 20 units of wood
             con.println("You took the challenging path and collected " + woodCollected + " units of wood!");
         } else {
