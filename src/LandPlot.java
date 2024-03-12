@@ -8,20 +8,17 @@ public class LandPlot extends Square {
 
     public LandPlot(String name, RenderObject renderObject, BuildingType buildingType) {
         super(name, renderObject);
-        switch(buildingType) {
-            case WORM_BREEDER -> {
-                this.laborCost = PRICES.WORM_BREEDER_LABORCOST;
-                this.woodCost = PRICES.WORM_BREEDER_WOODCOST;
-                this.wormCost = PRICES.WORM_BREEDER_WORMCOST;
-            }
-            case TOILET -> {
-                this.laborCost = PRICES.TOILET_LABORCOST;
-                this.woodCost = PRICES.TOILET_WOODCOST;
-                this.wormCost = PRICES.TOILET_WORMCOST;
-            }
-            default -> {
-                throw new RuntimeException("Invalid Building Type");
-            }
+        if(buildingType == null) {
+            throw new RuntimeException("Cant have Null BuildingType");
+        }
+        if(buildingType == BuildingType.WORM_BREEDER) {
+            this.laborCost = PRICES.WORM_BREEDER_LABORCOST;
+            this.woodCost = PRICES.WORM_BREEDER_WOODCOST;
+            this.wormCost = PRICES.WORM_BREEDER_WORMCOST;
+        } else {
+            this.laborCost = PRICES.TOILET_LABORCOST;
+            this.woodCost = PRICES.TOILET_WOODCOST;
+            this.wormCost = PRICES.TOILET_WORMCOST;
         }
         this.buildingType = buildingType;
         this.building = null;
@@ -58,8 +55,7 @@ public class LandPlot extends Square {
         if(this.owner != null) {
             if(this.owner == player) {
                 con.println(this.name + " is owned by you.");
-                sellComposite(player, input);
-                //TODO: MAYBE DO UPGRADE
+                //TODO: MAYBE
             } else {
                 con.println(this.name + " is owned already by " + this.owner.name);
                 var donate = input.getBool("To help this community project would you like to donate anything the the owner of this plot");
@@ -95,7 +91,7 @@ public class LandPlot extends Square {
                         case 3:
                             donationAmount = Integer.min(player.getWorms(), 20);
                             con.print(donationAmount + " Worms ");
-                            this.owner.setMoney(donationAmount);
+                            this.owner.setWorms(donationAmount);
                             break;
                     }
                     con.println(" to " + this.owner.name);
@@ -111,7 +107,7 @@ public class LandPlot extends Square {
                 con.println("It can have a Toilet for the community built on it!");
                 break;
             case WORM_BREEDER:
-                con.println("It can have a worm breeder to help you build more toilets built on it!");
+                con.println("It can have a worm breeder to help you build more toilets!");
                 break;
         }
         var ownershipChoice = input.getBool("Do you want to take ownership?");
@@ -157,28 +153,31 @@ public class LandPlot extends Square {
             setOwner(newOwner);
         }
     }
-
-    private void sellComposite(Player player, Input input) {
-        //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
-        var con = input.getCon();
-        //gets and emptys content of compost
-        int compostAmount = building.takeContent();
-
-        // Check if there is compost to sell
-        if (compostAmount > 0) {
-            int pricePerUnit = (int) Math.random()*4 +1; // rand between 1 - 5
-
-            // Calculate the total sale amount
-            int totalSaleAmount = compostAmount * pricePerUnit;
-            // Update player's money
-            player.setMoney(player.getMoney() + totalSaleAmount);
-
-            // Inform the player
-            //TODO: search for currency units and replacec
-            con.println("You sold " + compostAmount + " units of compost to farmers for " + totalSaleAmount + " currency units.");
-        } else {
-            // Inform the player if there's no compost to sell
-            con.println("There is no compost available to sell.");
-        }
-    }
+//
+//    private void sellComposite(Player player, Input input) {
+//        //TODO: Method should allow player to exchange the composite from toilet to farmers in exchange for money
+//        var con = input.getCon();
+//        //gets and emptys content of compost
+//        if(building == null) {
+//            return;
+//        }
+//        int compostAmount = building.takeContent();
+//
+//        // Check if there is compost to sell
+//        if (compostAmount > 0) {
+//            int pricePerUnit = (int) Math.random()*4 +1; // rand between 1 - 5
+//
+//            // Calculate the total sale amount
+//            int totalSaleAmount = compostAmount * pricePerUnit;
+//            // Update player's money
+//            player.setMoney(player.getMoney() + totalSaleAmount);
+//
+//            // Inform the player
+//            //TODO: search for currency units and replacec
+//            con.println("You sold " + compostAmount + " units of compost to farmers for " + totalSaleAmount + " currency units.");
+//        } else {
+//            // Inform the player if there's no compost to sell
+//            con.println("There is no compost available to sell.");
+//        }
+//    }
 }
